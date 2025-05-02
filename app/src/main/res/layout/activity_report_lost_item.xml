@@ -13,7 +13,7 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".FindLostItem">
+        tools:context=".ReportLostItem">
 
         <ImageView
             android:id="@+id/btn_home"
