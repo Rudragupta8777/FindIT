@@ -60,10 +60,9 @@ class ItemDetails : AppCompatActivity() {
         }
 
         claimButton.setOnClickListener {
-            // Handle claim button click
-            Toast.makeText(this, "Claim request sent for $itemName", Toast.LENGTH_SHORT).show()
-            // Here you would implement the actual claim process
-            // e.g., send a claim request to your backend
+            // Launch QR Scanner Activity when claim button is clicked
+            val intent = Intent(this, QRScannerActivity::class.java)
+            startActivity(intent)
         }
     }
 }
