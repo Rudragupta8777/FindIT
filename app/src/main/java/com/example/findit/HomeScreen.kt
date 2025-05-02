@@ -10,11 +10,17 @@ class HomeScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main_screen)
+        setContentView(R.layout.activity_home_screen)
 
         val findLostItem = findViewById<MaterialButton>(R.id.btn_find_lost)
         findLostItem.setOnClickListener {
-            val intent = Intent(this, FindLostItem::class.java)
+            val intent = Intent(this, FindItem::class.java)
+            startActivity(intent)
+        }
+
+        val reportLostItem = findViewById<MaterialButton>(R.id.btn_report_lost)
+        reportLostItem.setOnClickListener {
+            val intent = Intent(this, ReportLostItem::class.java)
             startActivity(intent)
         }
 
