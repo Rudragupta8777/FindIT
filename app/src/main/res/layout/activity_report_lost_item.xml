@@ -93,6 +93,42 @@
         </androidx.cardview.widget.CardView>
 
         <TextView
+            android:id="@+id/text_item_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:text="Choose Item Type"
+            android:textColor="#FFEEC3"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@+id/card_item_name"
+            tools:layout_editor_absoluteX="0dp" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_item_type"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            app:cardBackgroundColor="#191919"
+            android:foreground="@drawable/input_box"
+            app:cardCornerRadius="10dp"
+            app:layout_constraintTop_toBottomOf="@+id/text_item_type">
+
+            <Spinner
+                android:id="@+id/item_type_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:backgroundTint="@android:color/white"
+                android:spinnerMode="dropdown" />
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
             android:id="@+id/text_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -102,7 +138,7 @@
             android:text="When did you find it?"
             android:textColor="#FFEEC3"
             android:textSize="16sp"
-            app:layout_constraintTop_toBottomOf="@+id/card_item_name"
+            app:layout_constraintTop_toBottomOf="@+id/card_item_type"
             tools:layout_editor_absoluteX="0dp" />
 
         <androidx.cardview.widget.CardView
