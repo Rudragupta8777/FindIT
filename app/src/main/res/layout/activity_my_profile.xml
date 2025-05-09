@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#191919"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        tools:context=".MyProfile">
+
+        <!-- Header Section -->
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="15dp"
+            android:layout_height="25dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="70dp"
+            android:src="@drawable/back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/my_profile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:gravity="center"
+            android:text="My Profile"
+            android:textColor="#FFEEC3"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btn_back"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_back" />
+
+        <!-- Profile Section -->
+        <ImageView
+            android:id="@+id/profile_icon"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="70dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="70dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/profile_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/my_profile" />
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="25dp"
+            android:gravity="center"
+            android:text="Rudra Gupta"
+            android:textColor="#FFEEC3"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profile_icon" />
+
+        <!-- Email section - centered horizontally -->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.25" />
+
+        <ImageView
+            android:id="@+id/email_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="5dp"
+            android:src="@drawable/email"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintTop_toBottomOf="@+id/user_name" />
+
+        <TextView
+            android:id="@+id/user_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="rudra.gupta2023@vitstudent.ac.in"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/email_icon"
+            app:layout_constraintStart_toStartOf="@+id/guideline_vertical"
+            app:layout_constraintTop_toTopOf="@+id/email_icon" />
+
+        <!-- Menu Buttons - Equal spacing and consistent sizing -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/user_activity"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="25dp"
+            android:backgroundTint="#FFEEC3"
+            android:text="Your Activity"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            app:cornerRadius="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/email_icon" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/about_us"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="25dp"
+            android:backgroundTint="#FFEEC3"
+            android:text="About us"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            app:cornerRadius="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/user_activity" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/terms_and_conditions"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="25dp"
+            android:backgroundTint="#FFEEC3"
+            android:text="Terms &amp; Conditions"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            app:cornerRadius="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/about_us" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/developer_team"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="25dp"
+            android:backgroundTint="#FFEEC3"
+            android:text="Developer Team"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            app:cornerRadius="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/terms_and_conditions" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/sign_out"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="25dp"
+            android:backgroundTint="#FFEEC3"
+            android:text="Sign Out"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            app:cornerRadius="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/developer_team" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

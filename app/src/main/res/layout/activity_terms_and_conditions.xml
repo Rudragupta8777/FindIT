@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#191919"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        tools:context=".MyProfile">
+
+        <!-- Header Section -->
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="15dp"
+            android:layout_height="25dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="70dp"
+            android:src="@drawable/back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/terms_and_conditions"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="40dp"
+            android:text="Terms and Conditions"
+            android:textColor="#FFEEC3"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/btn_home"
+            app:layout_constraintStart_toStartOf="@+id/btn_back"
+            app:layout_constraintTop_toTopOf="@+id/btn_back"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_back" />
+
+        <ImageView
+            android:id="@+id/btn_home"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="60dp"
+            android:layout_marginEnd="25dp"
+            android:src="@drawable/home"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/terms_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="#4DF8ECD0"
+            android:foreground="@drawable/terms_and_condition_box"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp"
+            app:layout_constraintTop_toBottomOf="@+id/terms_and_conditions"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0">
+
+            <TextView
+                android:id="@+id/terms_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="18dp"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:lineSpacingExtra="4dp"
+                android:text="1. Introduction\n- Welcome to &quot;FindIt,&quot; a college-based community app developed to help students and staff find their lost items and list items they have found. By using our app, you agree to abide by the following terms and conditions. Please read them carefully.\n\n2. Acceptance of Terms\n- By accessing and using &quot;FindIt,&quot; you accept and agree to be bound by these terms and conditions. If you do not agree with any part of these terms, you should not use the app.\n\n3. User Responsibilities\n- Accuracy of Information: Users must provide accurate and truthful information when listing lost or found items.\n- Prohibited Items: Do not list any items that are illegal, dangerous, or prohibited by college policies.\n- Respect for Others: Treat all users with respect and courtesy. Harassment, abusive language, or inappropriate behaviour will not be tolerated.\n\n4. Listing Lost and Found Items\n- Lost Items: When listing a lost item, provide a clear and detailed description, including the date and location where it was last seen.\n- Found Items: When listing a found item, provide a clear and detailed description, including the date and location where it was found.\n- Ownership Verification: The person claiming a lost item may be required to provide proof of ownership to ensure the rightful owner is reunited with their property.\n\n5. App Usage\n- No Commercial Use: The app is intended for personal use within the college community. Commercial use of the app is prohibited.\n- No Misuse: Do not use the app for any fraudulent activities or to list false information.\n- Account Security: You are responsible for maintaining the confidentiality of your account information and for all activities that occur under your account.\n\n6. Privacy Policy\n- We value your privacy. Please review our Privacy Policy to understand how we collect, use, and protect your personal information.\n\n7. Limitation of Liability\n- &quot;FindIt&quot; is provided on an &quot;as-is&quot; basis. We do not guarantee that all lost items will be found or that all found items will be returned to their rightful owners. We are not responsible for any direct, indirect, incidental, or consequential damages arising from the use of the app.\n\n8. Changes to Terms\n- We reserve the right to modify these terms and conditions at any time. Any changes will be posted on the app, and your continued use of the app after such changes constitutes your acceptance of the new terms.\n\n9. Termination\n- We reserve the right to terminate your access to &quot;FindIt&quot; at our discretion, without notice, if you violate these terms and conditions or engage in any conduct that we deem inappropriate.\n\n10. Governing Law\n- These terms and conditions are governed by the laws of the jurisdiction in which the college is located. Any disputes arising from the use of the app will be resolved in accordance with these laws." />
+
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

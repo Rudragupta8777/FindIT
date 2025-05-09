@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    app:cardCornerRadius="15dp"
+    app:cardBackgroundColor="#000000"
+    app:cardElevation="0dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/item_image"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:background="#D9D9D9"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+            android:id="@+id/item_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Item Name"
+            android:textColor="#FFEEC3"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@id/item_image"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/item_details"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Item Details : "
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toStartOf="@id/item_name"
+            app:layout_constraintTop_toBottomOf="@id/item_name"
+            app:layout_constraintEnd_toStartOf="@+id/icon_delete" />
+
+        <!-- Delete icon moved to be at the end of item details -->
+        <ImageView
+            android:id="@+id/icon_delete"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/delete"
+            android:layout_marginStart="8dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/item_details"
+            app:layout_constraintBottom_toBottomOf="@id/item_details" />
+
+        <TextView
+            android:id="@+id/time_found"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Time Found : "
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toStartOf="@id/item_details"
+            app:layout_constraintTop_toBottomOf="@id/item_details"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/place"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Place : "
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toStartOf="@id/time_found"
+            app:layout_constraintTop_toBottomOf="@id/time_found"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Claimed status icon -->
+        <ImageView
+            android:id="@+id/icon_claimed"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/item_claimed_tick"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/place" />
+
+        <!-- QR code option -->
+        <LinearLayout
+            android:id="@+id/qr_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/place">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show QR"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                android:layout_marginEnd="4dp"/>
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/show_qr"/>
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
