@@ -2,9 +2,11 @@ package com.example.findit
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.TextView
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import com.example.findit.data.User
 import com.google.android.material.button.MaterialButton
 
 class HomeScreen : AppCompatActivity() {
@@ -30,6 +32,14 @@ class HomeScreen : AppCompatActivity() {
             val intent = Intent(this, ReportLostItem::class.java)
             startActivity(intent)
         }
+
+        val nameText = findViewById<TextView>(R.id.user_name)
+        val name = intent.getStringExtra("name")
+        val firstName = name?.split(" ")?.firstOrNull() ?: ""
+        nameText.setText(firstName+"!")
+
+
+
 
     }
 }
