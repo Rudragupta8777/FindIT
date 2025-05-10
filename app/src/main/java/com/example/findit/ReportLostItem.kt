@@ -15,8 +15,11 @@ import android.provider.MediaStore
 import android.text.InputType
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -44,6 +47,8 @@ class ReportLostItem : AppCompatActivity() {
     private lateinit var cardTime: CardView
     private lateinit var cardPhoto: CardView
     private lateinit var cardDescription: CardView
+    private lateinit var cardItemType: CardView
+    private lateinit var itemTypeSpinner: Spinner
 
     // Error TextViews
     private lateinit var errorItemName: TextView
@@ -53,9 +58,11 @@ class ReportLostItem : AppCompatActivity() {
     private lateinit var errorDescription: TextView
     private lateinit var errorContact: TextView
     private lateinit var errorPhoto: TextView
+    private lateinit var errorItemType: TextView
 
     private val calendar = Calendar.getInstance()
     private var photoSelected = false
+    private var itemTypeSelected = false
 
     // Activity result launcher for gallery selection
     private val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -125,9 +132,32 @@ class ReportLostItem : AppCompatActivity() {
         cardTime = findViewById(R.id.card_time)
         cardPhoto = findViewById(R.id.card_photo)
         cardDescription = findViewById(R.id.card_description)
+        cardItemType = findViewById(R.id.card_item_type)
 
         val submit = findViewById<MaterialButton>(R.id.add_lost)
         val home = findViewById<ImageView>(R.id.btn_home)
+        itemTypeSpinner = findViewById(R.id.item_type_spinner)
+
+        // Setup Spinner
+        val itemTypes = listOf("Select Item Type", "Electronics", "ID Card", "Clothing", "Books", "Accessories", "Others")
+        val adapter = ArrayAdapter(this, R.layout.spinner_item, itemTypes)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        itemTypeSpinner.adapter = adapter
+
+        // Add spinner item selection listener
+        itemTypeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                // If user selects anything other than "Select Item Type" (position 0), consider it selected
+                itemTypeSelected = position != 0
+                if (itemTypeSelected) {
+                    hideError(errorItemType)
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                itemTypeSelected = false
+            }
+        }
 
         // Initialize error TextViews
         createErrorTextViews()
@@ -160,6 +190,7 @@ class ReportLostItem : AppCompatActivity() {
         }
     }
 
+
     private fun setupDescriptionCard() {
         // Make the entire description card clickable and focus on the EditText
         cardDescription.setOnClickListener {
@@ -170,6 +201,7 @@ class ReportLostItem : AppCompatActivity() {
     private fun createErrorTextViews() {
         // Create error TextViews after each field
         errorItemName = createErrorTextView(R.id.card_item_name)
+        errorItemType = createErrorTextView(R.id.card_item_type)
         errorDate = createErrorTextView(R.id.card_date)
         errorTime = createErrorTextView(R.id.card_time)
         errorPlace = createErrorTextView(R.id.card_place)
@@ -262,6 +294,12 @@ class ReportLostItem : AppCompatActivity() {
             isValid = false
         }
 
+        // Check item type
+        if (!itemTypeSelected) {
+            showError(errorItemType, cardItemType)
+            isValid = false
+        }
+
         // Check date
         if (itemDateEditText.text.toString().trim().isEmpty()) {
             showError(errorDate, cardDate)
@@ -338,6 +376,8 @@ class ReportLostItem : AppCompatActivity() {
         // Reset border colors
         when (errorTextView) {
             errorItemName -> findViewById<CardView>(R.id.card_item_name).foreground =
+                ContextCompat.getDrawable(this, R.drawable.input_box)
+            errorItemType -> cardItemType.foreground =
                 ContextCompat.getDrawable(this, R.drawable.input_box)
             errorDate -> cardDate.foreground =
                 ContextCompat.getDrawable(this, R.drawable.input_box)

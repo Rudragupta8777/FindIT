@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature android:name="android.hardware.camera" />
 
@@ -16,6 +17,30 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FindIT"
         tools:targetApi="31">
+        <activity
+            android:name=".QRGeneratorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ItemReportHistory"
+            android:exported="false" />
+        <activity
+            android:name=".ClaimedItemDetails"
+            android:exported="false" />
+        <activity
+            android:name=".ItemClaimedHistory"
+            android:exported="false" />
+        <activity
+            android:name=".DevelopersTeam"
+            android:exported="false" />
+        <activity
+            android:name=".TermsAndConditions"
+            android:exported="false" />
+        <activity
+            android:name=".MyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MyProfile"
+            android:exported="false" />
         <activity
             android:name=".ItemClaimedSuccesfully"
             android:exported="false" />

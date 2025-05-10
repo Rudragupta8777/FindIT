@@ -65,4 +65,10 @@ dependencies {
 
     // ViewBinding
     implementation("androidx.activity:activity-ktx:1.8.2")
+
+    // ZXing library for QR code generation
+    implementation("com.google.zxing:core:3.5.1")
+
+    // If you also need ML Kit for barcode scanning (you imported BarcodeFormat from ML Kit)
+    implementation("com.google.mlkit:barcode-scanning:17.1.0")
 }
