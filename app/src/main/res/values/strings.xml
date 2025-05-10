@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">FindIT</string>
+    <string name="terms">Terms &amp; Conditions</string>
     <string name="default_web_client_id">YOUR_CLIENT_ID_FROM_FIREBASE</string>
+    <string-array name="item_types">
+        <item>Electronics</item>
+        <item>ID Card</item>
+        <item>Clothing</item>
+        <item>Books</item>
+        <item>Accessories</item>
+        <item>Others</item>
+    </string-array>
 </resources>
