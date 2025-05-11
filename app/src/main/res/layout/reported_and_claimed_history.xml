@@ -25,29 +25,50 @@
             app:layout_constraintBottom_toBottomOf="parent" />
 
         <TextView
-            android:id="@+id/item_name"
-            android:layout_width="0dp"
+            android:id="@+id/item_name_label"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Item Name"
+            android:text="Item Name :"
             android:textColor="#FFEEC3"
-            android:gravity="center"
             android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginStart="16dp"
             app:layout_constraintStart_toEndOf="@id/item_image"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/item_name_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/item_name_label"
+            app:layout_constraintTop_toTopOf="@id/item_name_label"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
-            android:id="@+id/item_details"
-            android:layout_width="0dp"
+            android:id="@+id/date_label"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Item Details : "
+            android:text="Date :"
             android:textColor="@android:color/white"
             android:textSize="14sp"
-            android:layout_marginTop="4dp"
-            app:layout_constraintStart_toStartOf="@id/item_name"
-            app:layout_constraintTop_toBottomOf="@id/item_name"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="@id/item_name_label"
+            app:layout_constraintTop_toBottomOf="@id/item_name_label" />
+
+        <TextView
+            android:id="@+id/date_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/date_label"
+            app:layout_constraintTop_toTopOf="@id/date_label"
             app:layout_constraintEnd_toStartOf="@+id/icon_delete" />
 
         <!-- Delete icon moved to be at the end of item details -->
@@ -59,31 +80,53 @@
             android:layout_marginStart="8dp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/item_details"
-            app:layout_constraintBottom_toBottomOf="@id/item_details" />
+            app:layout_constraintTop_toTopOf="@id/date_label"
+            app:layout_constraintBottom_toBottomOf="@id/date_label" />
 
         <TextView
-            android:id="@+id/time_found"
-            android:layout_width="0dp"
+            android:id="@+id/time_label"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Time Found : "
+            android:text="Time :"
             android:textColor="@android:color/white"
             android:textSize="14sp"
-            android:layout_marginTop="4dp"
-            app:layout_constraintStart_toStartOf="@id/item_details"
-            app:layout_constraintTop_toBottomOf="@id/item_details"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="@id/date_label"
+            app:layout_constraintTop_toBottomOf="@id/date_label" />
+
+        <TextView
+            android:id="@+id/time_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/time_label"
+            app:layout_constraintTop_toTopOf="@id/time_label"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
-            android:id="@+id/place"
-            android:layout_width="0dp"
+            android:id="@+id/place_label"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Place : "
+            android:text="Place :"
             android:textColor="@android:color/white"
             android:textSize="14sp"
-            android:layout_marginTop="4dp"
-            app:layout_constraintStart_toStartOf="@id/time_found"
-            app:layout_constraintTop_toBottomOf="@id/time_found"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="@id/time_label"
+            app:layout_constraintTop_toBottomOf="@id/time_label" />
+
+        <TextView
+            android:id="@+id/place_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/place_label"
+            app:layout_constraintTop_toTopOf="@id/place_label"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Claimed status icon -->
@@ -95,7 +138,7 @@
             android:layout_marginTop="8dp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/place" />
+            app:layout_constraintTop_toBottomOf="@+id/place_value" />
 
         <!-- QR code option -->
         <LinearLayout
@@ -107,7 +150,7 @@
             android:layout_marginTop="8dp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/place">
+            app:layout_constraintTop_toBottomOf="@+id/place_value">
 
             <TextView
                 android:layout_width="wrap_content"

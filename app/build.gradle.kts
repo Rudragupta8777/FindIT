@@ -71,4 +71,12 @@ dependencies {
 
     // If you also need ML Kit for barcode scanning (you imported BarcodeFormat from ML Kit)
     implementation("com.google.mlkit:barcode-scanning:17.1.0")
+
+    // Glide for image loading
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+
+    // Firebase dependencies
+    implementation(platform("com.google.firebase:firebase-bom:32.4.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
 }
