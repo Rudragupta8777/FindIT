@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id)) // from google-services.json
             .requestEmail()
+            .requestProfile() // Request user profile data including name and profile picture
             .build()
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
@@ -124,7 +125,7 @@ class MainActivity : AppCompatActivity() {
                 val email = account.email ?: ""
 
                 if (email.endsWith("@vitstudent.ac.in")) {
-                    firebaseAuthWithGoogle(account.idToken!!)
+                    firebaseAuthWithGoogle(account.idToken!!, account)
                 } else {
                     Toast.makeText(this, "Only @vitstudent.ac.in emails are allowed", Toast.LENGTH_SHORT).show()
                     googleSignInClient.signOut()
@@ -135,7 +136,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun firebaseAuthWithGoogle(idToken: String) {
+    private fun firebaseAuthWithGoogle(idToken: String, account: GoogleSignInAccount) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
