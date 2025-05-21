@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         // Initialize RetrofitInstance
-        initializeRetrofit()
+        //initializeRetrofit()
 
         // Configure Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
