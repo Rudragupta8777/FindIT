@@ -1,13 +1,20 @@
 package com.example.findit
 
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
 class ReportedItemsAdapter(
@@ -18,10 +25,10 @@ class ReportedItemsAdapter(
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val itemImage: ImageView = itemView.findViewById(R.id.item_image)
-        val itemName: TextView = itemView.findViewById(R.id.item_name)
-        val itemDetails: TextView = itemView.findViewById(R.id.item_details)
-        val timeFound: TextView = itemView.findViewById(R.id.time_found)
-        val place: TextView = itemView.findViewById(R.id.place)
+        val itemName: TextView = itemView.findViewById(R.id.item_name_value)
+        val date: TextView = itemView.findViewById(R.id.date_value)
+        val timeFound: TextView = itemView.findViewById(R.id.time_value)
+        val place: TextView = itemView.findViewById(R.id.place_value)
         val iconClaimed: ImageView = itemView.findViewById(R.id.icon_claimed)
         val iconDelete: ImageView = itemView.findViewById(R.id.icon_delete)
         val qrContainer: LinearLayout = itemView.findViewById(R.id.qr_container)
@@ -38,62 +45,111 @@ class ReportedItemsAdapter(
 
         // Set item data
         holder.itemName.text = item.itemName
-        holder.itemDetails.text = "Item Details: ${item.description}"
-        holder.timeFound.text = "Time Found: ${item.time}"
-        holder.place.text = "Place: ${item.place}"
+        holder.date.text = item.date
+        holder.timeFound.text = item.time
+        holder.place.text = item.place
 
         // Set image if available
         item.imageResource?.let {
             holder.itemImage.setImageResource(it)
         }
 
-        // Handle status-specific UI elements
+        // Handle status-specific UI elements and click behavior
         when (item.status) {
             ReportedItemStatus.CLAIMED -> {
-                // For claimed items, only show tick mark
+                // For claimed items, show tick mark and make card clickable
                 holder.iconClaimed.visibility = View.VISIBLE
                 holder.iconDelete.visibility = View.GONE
                 holder.qrContainer.visibility = View.GONE
+
+                // Enable click to view details ONLY for claimed items
+                holder.itemView.setOnClickListener {
+                    val context = holder.itemView.context
+                    navigateToClaimedItemDetails(context, item)
+                }
+                // Visual feedback for clickable items
+                holder.itemView.isClickable = true
+                holder.itemView.isFocusable = true
             }
             ReportedItemStatus.UNCLAIMED -> {
                 // For unclaimed items, show both delete and QR options
                 holder.iconClaimed.visibility = View.GONE
                 holder.iconDelete.visibility = View.VISIBLE
                 holder.qrContainer.visibility = View.VISIBLE
+
+                // Disable click for unclaimed items
+                holder.itemView.setOnClickListener(null)
+                // Remove visual feedback for clickable items
+                holder.itemView.isClickable = false
+                holder.itemView.isFocusable = false
             }
             ReportedItemStatus.DELETED -> {
                 // For deleted items, only show delete icon
                 holder.iconClaimed.visibility = View.GONE
                 holder.iconDelete.visibility = View.VISIBLE
                 holder.qrContainer.visibility = View.GONE
+
+                // Disable click for deleted items
+                holder.itemView.setOnClickListener(null)
+                // Remove visual feedback for clickable items
+                holder.itemView.isClickable = false
+                holder.itemView.isFocusable = false
             }
         }
 
-        // Always show delete icon for unclaimed items regardless of status
-        // This ensures it's positioned at the end of item details
-        if (item.status == ReportedItemStatus.UNCLAIMED) {
-            holder.iconDelete.visibility = View.VISIBLE
-        }
-
-        // Set click listeners for item
-        holder.itemView.setOnClickListener {
-            val context = holder.itemView.context
-            navigateToItemDetails(context, item)
-        }
-
-        // Set click listener for QR code
+        // Set click listener for QR code button
         holder.qrContainer.setOnClickListener {
             onQrCodeClickListener(item)
         }
 
-        // Set click listener for delete icon
+        // Set click listener for delete icon with confirmation dialog
         holder.iconDelete.setOnClickListener {
-            onDeleteClickListener(item)
+            showDeleteConfirmation(holder.itemView.context, item)
         }
     }
 
-    private fun navigateToItemDetails(context: Context, item: ReportedItem) {
-        val intent = Intent(context, ItemDetails::class.java).apply {
+    private fun showDeleteConfirmation(context: Context, item: ReportedItem) {
+        // Create dialog using custom layout
+        val dialog = Dialog(context)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_delete_confirmation)
+
+        // Make dialog background transparent and set rounded corners
+        dialog.window?.apply {
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT
+            )
+        }
+
+        // Get references to views in the custom layout
+        val dialogTitle = dialog.findViewById<TextView>(R.id.dialog_title)
+        val dialogMessage = dialog.findViewById<TextView>(R.id.dialog_message)
+        val btnYes = dialog.findViewById<Button>(R.id.btn_yes)
+        val btnNo = dialog.findViewById<Button>(R.id.btn_no)
+
+        // Set custom message
+        dialogMessage.text = "Are you sure you want to delete '${item.itemName}'?"
+
+        // Set button click listeners
+        btnYes.setOnClickListener {
+            // Call the delete listener to handle deletion
+            onDeleteClickListener(item)
+            dialog.dismiss()
+        }
+
+        btnNo.setOnClickListener {
+            // User canceled the deletion
+            dialog.dismiss()
+        }
+
+        // Show the dialog
+        dialog.show()
+    }
+
+    private fun navigateToClaimedItemDetails(context: Context, item: ReportedItem) {
+        val intent = Intent(context, ClaimedItemDetails::class.java).apply {
             putExtra("item_name", item.itemName)
             putExtra("date", item.date)
             putExtra("time", item.time)

@@ -1,8 +1,15 @@
 package com.example.findit
 
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.view.Window
+import android.view.WindowManager
+import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -111,15 +118,52 @@ class ItemReportHistory : AppCompatActivity() {
     }
 
     private fun handleDeleteItem(item: ReportedItem) {
-        // In a real app, this would delete the item from database
-        Toast.makeText(
-            this,
-            "Item '${item.itemName}' has been deleted",
-            Toast.LENGTH_SHORT
-        ).show()
+        // Create dialog using custom layout
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_delete_confirmation)
 
-        // Refresh the list (in a real app, you would fetch the new list from database)
-        val updatedList = createSampleReportedItems().filter { it.itemName != item.itemName }
-        adapter.updateItems(updatedList)
+        // Make dialog background transparent and set rounded corners
+        dialog.window?.apply {
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT
+            )
+        }
+
+        // Get references to views in the custom layout
+        val dialogTitle = dialog.findViewById<TextView>(R.id.dialog_title)
+        val dialogMessage = dialog.findViewById<TextView>(R.id.dialog_message)
+        val btnYes = dialog.findViewById<Button>(R.id.btn_yes)
+        val btnNo = dialog.findViewById<Button>(R.id.btn_no)
+
+        // Set custom message
+        dialogMessage.text = "Are you sure you want to delete '${item.itemName}'?"
+
+        // Set button click listeners
+        btnYes.setOnClickListener {
+            // Delete the item
+            // In a real app, this would delete the item from database
+            Toast.makeText(
+                this,
+                "Item '${item.itemName}' has been deleted",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            // Refresh the list (in a real app, you would fetch the new list from database)
+            val updatedList = createSampleReportedItems().filter { it.itemName != item.itemName }
+            adapter.updateItems(updatedList)
+
+            dialog.dismiss()
+        }
+
+        btnNo.setOnClickListener {
+            // User canceled the deletion
+            dialog.dismiss()
+        }
+
+        // Show the dialog
+        dialog.show()
     }
 }
