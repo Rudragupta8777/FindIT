@@ -7,14 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.findit.data.Item
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-class LostFoundAdapter(private var allItems: List<LostFoundItem>) :
+class LostFoundAdapter(private var allItems: List<Item>) :
     RecyclerView.Adapter<LostFoundAdapter.ViewHolder>() {
 
     // Current filtered list of items
-    private var filteredItems: List<LostFoundItem> = allItems
+    private var filteredItems: List<Item> = allItems
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val itemImage: ImageView = itemView.findViewById(R.id.item_image)
@@ -32,16 +38,19 @@ class LostFoundAdapter(private var allItems: List<LostFoundItem>) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = filteredItems[position]
-
-        holder.itemNameValue.text = item.itemName
-        holder.dateValue.text = item.date
-        holder.timeValue.text = item.time
-        holder.placeValue.text = item.place
+        holder.itemNameValue.text = item.title
+        val (date, time) = formatDateTime(item.dateFound)
+        holder.dateValue.text = date
+        holder.timeValue.text = time
+        holder.placeValue.text = item.location
 
         // Set image if available
-        item.imageResource?.let {
-            holder.itemImage.setImageResource(it)
+        item.imageUrl.let {
+            Glide.with(holder.itemView.context)
+                .load(it)
+                .into(holder.itemImage)
         }
+
 
         // Set click listener on the entire item view
         holder.itemView.setOnClickListener {
@@ -50,17 +59,18 @@ class LostFoundAdapter(private var allItems: List<LostFoundItem>) :
         }
     }
 
-    private fun navigateToItemDetails(context: Context, item: LostFoundItem) {
+    private fun navigateToItemDetails(context: Context, item: Item) {
         val intent = Intent(context, ItemDetails::class.java).apply {
-            putExtra("item_name", item.itemName)
-            putExtra("date", item.date)
-            putExtra("time", item.time)
-            putExtra("place", item.place)
-            putExtra("image_resource", item.imageResource)
+            putExtra("item_name", item.title)
+            val (date, time) = formatDateTime(item.dateFound)
+            putExtra("date", date)
+            putExtra("time", time)
+            putExtra("place", item.location)
+            putExtra("image_resource", item.imageUrl)
 
             // You can add more data here if needed
-            putExtra("contact", "Contact information for this item")
-            putExtra("description", "This is a detailed description of the item that was found. It includes information about the condition and identifying features.")
+            putExtra("contact", item.contact)
+            putExtra("description", item.description)
         }
         context.startActivity(intent)
     }
@@ -75,8 +85,8 @@ class LostFoundAdapter(private var allItems: List<LostFoundItem>) :
             allItems
         } else {
             allItems.filter { item ->
-                item.itemName.lowercase(Locale.getDefault()).contains(lowercaseQuery) ||
-                        item.place.lowercase(Locale.getDefault()).contains(lowercaseQuery)
+                item.title.lowercase(Locale.getDefault()).contains(lowercaseQuery) ||
+                        item.location.lowercase(Locale.getDefault()).contains(lowercaseQuery)
             }
         }
 
@@ -84,9 +94,23 @@ class LostFoundAdapter(private var allItems: List<LostFoundItem>) :
     }
 
     // Method to update all items
-    fun updateItems(newItems: List<LostFoundItem>) {
+    fun updateItems(newItems: List<Item>) {
         allItems = newItems
         filteredItems = newItems
         notifyDataSetChanged()
+    }
+
+
+    fun formatDateTime(dateFound: String): Pair<String, String> {
+        val instant = Instant.parse(dateFound)
+        val zonedDateTime = instant.atZone(ZoneId.systemDefault()) // or use ZoneId.of("UTC") if you want UTC time
+
+        val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yy")
+        val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+        val date = zonedDateTime.format(dateFormatter)
+        val time = zonedDateTime.format(timeFormatter)
+
+        return date to time
     }
 }
