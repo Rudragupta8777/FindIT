@@ -6,10 +6,13 @@ import android.util.Log
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.example.findit.objects.RetrofitInstance
 import com.google.android.gms.auth.api.signin.*
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,7 +28,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Initialize Firebase Auth
         auth = FirebaseAuth.getInstance()
+
+        // Initialize RetrofitInstance
+        initializeRetrofit()
 
         // Configure Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -37,9 +44,74 @@ class MainActivity : AppCompatActivity() {
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         val signInBtn = findViewById<FrameLayout>(R.id.bt_sign_in)
-        signInBtn.setOnClickListener {
+        /*googleSignInClient.signOut().addOnCompleteListener {
             val signInIntent = googleSignInClient.signInIntent
             startActivityForResult(signInIntent, RC_SIGN_IN)
+        }*/
+        signInBtn.setOnClickListener(){
+            googleSignInClient.signOut().addOnCompleteListener {
+                val signInIntent = googleSignInClient.signInIntent
+                startActivityForResult(signInIntent, RC_SIGN_IN)
+            }
+        }
+    }
+
+    private fun initializeRetrofit() {
+        // Simply referencing RetrofitInstance will initialize it
+        Log.d(TAG, "RetrofitInstance initialized: ${RetrofitInstance.javaClass.name}")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Check if user is already signed in with Firebase
+        //val currentUser = auth.currentUser
+        /*if (currentUser != null) {
+            // Firebase user exists - attempt backend login
+            attemptBackendLogin(currentUser.email ?: "")
+        }*/
+    }
+
+    private fun attemptBackendLogin() {
+        // Show a loading indicator if needed
+
+        lifecycleScope.launch {
+            try {
+
+                // Make the API call
+                val response = RetrofitInstance.authUserApi.loginUser()
+
+                if (response.isSuccessful && response.body() != null) {
+                    Log.d(TAG, "Backend login successful")
+                    // Navigate to home screen on successful login
+                    val intent = Intent(this@MainActivity, HomeScreen::class.java)
+                    intent.putExtra("name", response.body()?.user?.name)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    Log.w(TAG, "Backend login failed: ${response.code()}")
+                    // Stay on login screen - backend login failed
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Login failed: ${response.message()}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    // Sign out from Firebase since backend login failed
+                    auth.signOut()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error during backend login", e)
+                Toast.makeText(
+                    this@MainActivity,
+                    "Login error: ${e.localizedMessage}",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                // Sign out from Firebase since backend login failed
+                auth.signOut()
+            }
+
+            // Hide loading indicator if needed
         }
     }
 
@@ -69,22 +141,8 @@ class MainActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    // Get user information
-                    val fullName = account.displayName ?: ""
-                    val firstName = fullName.split(" ")[0] // Get first name (text before first space)
-                    val profilePicUrl = account.photoUrl?.toString() ?: ""
-
-                    // Also extract the full name without registration number
-                    val fullNameWithoutReg = fullName.split("\\d".toRegex())[0].trim()
-
-                    // Create intent and pass user data
-                    val intent = Intent(this, HomeScreen::class.java).apply {
-                        putExtra("firstName", firstName)
-                        putExtra("profilePicUrl", profilePicUrl)
-                        putExtra("fullNameWithoutReg", fullNameWithoutReg)
-                    }
-                    startActivity(intent)
-                    finish()
+                    // Firebase authentication successful, now try backend login
+                    attemptBackendLogin()
                 } else {
                     Toast.makeText(this, "Authentication Failed.", Toast.LENGTH_SHORT).show()
                 }
