@@ -65,18 +65,21 @@ dependencies {
 
     // ViewBinding
     implementation("androidx.activity:activity-ktx:1.8.2")
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.11.0")
+
+// Coroutines for async operations
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
 
     // ZXing library for QR code generation
     implementation("com.google.zxing:core:3.5.1")
 
     // If you also need ML Kit for barcode scanning (you imported BarcodeFormat from ML Kit)
     implementation("com.google.mlkit:barcode-scanning:17.1.0")
-
-    // Glide for image loading
-    implementation("com.github.bumptech.glide:glide:4.15.1")
-    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
-
-    // Firebase dependencies
-    implementation(platform("com.google.firebase:firebase-bom:32.4.0"))
-    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
 }
