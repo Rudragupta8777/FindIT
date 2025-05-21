@@ -4,12 +4,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.findit.objects.RetrofitInstance
+import kotlinx.coroutines.launch
 
 class FindItem : AppCompatActivity() {
 
@@ -40,17 +44,7 @@ class FindItem : AppCompatActivity() {
         setupSearch()
     }
 
-    private fun setupRecyclerView() {
-        // Create sample data
-        val items = createSampleItems()
 
-        // Set up adapter
-        adapter = LostFoundAdapter(items)
-
-        // Set up RecyclerView
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = adapter
-    }
 
     private fun setupSearch() {
         searchEditText.addTextChangedListener(object : TextWatcher {
@@ -69,37 +63,26 @@ class FindItem : AppCompatActivity() {
         })
     }
 
-    private fun createSampleItems(): List<LostFoundItem> {
-        // Create and return a list of sample items
-        return listOf(
-            LostFoundItem(
-                itemName = "Lost Wallet",
-                date = "03/08/24",
-                time = "22:48",
-                place = "F Block 603",
-                imageResource = R.drawable.placeholder
-            ),
-            LostFoundItem(
-                itemName = "Keys",
-                date = "02/08/24",
-                time = "14:30",
-                place = "Library",
-                imageResource = R.drawable.placeholder
-            ),
-            LostFoundItem(
-                itemName = "Black Backpack",
-                date = "01/08/24",
-                time = "09:15",
-                place = "Cafeteria",
-                imageResource = R.drawable.placeholder
-            ),
-            LostFoundItem(
-                itemName = "Water Bottle",
-                date = "31/07/24",
-                time = "16:45",
-                place = "Gym",
-                imageResource = R.drawable.placeholder
-            )
-        )
+    private fun setupRecyclerView() {
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitInstance.authItemApi.getItems()
+                if (response.isSuccessful) {
+                    response.body()?.let { itemResponse ->
+                        adapter = LostFoundAdapter(itemResponse.items)
+                        recyclerView.layoutManager = LinearLayoutManager(this@FindItem)
+                        recyclerView.adapter = adapter
+                    } ?: run {
+                        // Handle case where body is null
+                        Log.e("setupRecyclerView1", "Response body is null")
+                    }
+                } else {
+                    Log.e("setupRecyclerView1", "Response not successful: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("setupRecyclerView1", "Exception: ${e.message}", e)
+            }
+        }
     }
+
 }

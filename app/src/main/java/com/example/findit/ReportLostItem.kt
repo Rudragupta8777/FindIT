@@ -13,6 +13,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.InputType
+import android.util.Log
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.AdapterView
@@ -28,11 +29,22 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import com.example.findit.objects.RetrofitInstance
 import com.google.android.material.button.MaterialButton
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.TimeZone.*
+import java.util.UUID
 
 class ReportLostItem : AppCompatActivity() {
 
@@ -49,6 +61,7 @@ class ReportLostItem : AppCompatActivity() {
     private lateinit var cardDescription: CardView
     private lateinit var cardItemType: CardView
     private lateinit var itemTypeSpinner: Spinner
+    private lateinit var submitButton: MaterialButton
 
     // Error TextViews
     private lateinit var errorItemName: TextView
@@ -63,6 +76,8 @@ class ReportLostItem : AppCompatActivity() {
     private val calendar = Calendar.getInstance()
     private var photoSelected = false
     private var itemTypeSelected = false
+    private var selectedImageBitmap: Bitmap? = null
+    private var isSubmitting = false
 
     // Activity result launcher for gallery selection
     private val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -71,6 +86,7 @@ class ReportLostItem : AppCompatActivity() {
                 val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
                 displaySelectedImage(bitmap)
                 photoSelected = true
+                selectedImageBitmap = bitmap
                 hideError(errorPhoto)
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -85,6 +101,7 @@ class ReportLostItem : AppCompatActivity() {
             val imageBitmap = result.data?.extras?.get("data") as Bitmap
             displaySelectedImage(imageBitmap)
             photoSelected = true
+            selectedImageBitmap = imageBitmap
             hideError(errorPhoto)
         }
     }
@@ -134,7 +151,7 @@ class ReportLostItem : AppCompatActivity() {
         cardDescription = findViewById(R.id.card_description)
         cardItemType = findViewById(R.id.card_item_type)
 
-        val submit = findViewById<MaterialButton>(R.id.add_lost)
+        submitButton = findViewById(R.id.add_lost)
         val home = findViewById<ImageView>(R.id.btn_home)
         itemTypeSpinner = findViewById(R.id.item_type_spinner)
 
@@ -176,10 +193,9 @@ class ReportLostItem : AppCompatActivity() {
         setupTextChangeListeners()
 
         // Submit button handler with validation
-        submit.setOnClickListener {
-            if (validateForm()) {
-                val intent = Intent(this, LostItemReportedSuccesfully::class.java)
-                startActivity(intent)
+        submitButton.setOnClickListener {
+            if (!isSubmitting && validateForm()) {
+                submitReport()
             }
         }
 
@@ -190,6 +206,145 @@ class ReportLostItem : AppCompatActivity() {
         }
     }
 
+    // Update the submitReport function to properly handle dateLost:
+
+    private fun submitReport() {
+        isSubmitting = true
+        submitButton.isEnabled = false
+        submitButton.text = "Submitting..."
+
+        // Prepare the image file
+        val imageFile = convertBitmapToFile(selectedImageBitmap!!)
+
+        // Create multipart request
+        val imageRequestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
+        val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, imageRequestBody)
+
+        // Create request bodies for text fields
+        val title = itemNameEditText.text.toString().trim()
+            .toRequestBody("text/plain".toMediaTypeOrNull())
+
+        val description = itemDescriptionEditText.text.toString().trim()
+            .toRequestBody("text/plain".toMediaTypeOrNull())
+
+        val contact = itemContactEditText.text.toString().trim()
+            .toRequestBody("text/plain".toMediaTypeOrNull())
+
+        val category = itemTypeSpinner.selectedItem.toString()
+            .toRequestBody("text/plain".toMediaTypeOrNull())
+
+        val location = itemPlaceEditText.text.toString().trim()
+            .toRequestBody("text/plain".toMediaTypeOrNull())
+
+        // Extract date and time from their respective fields
+        val dateStr = itemDateEditText.text.toString()
+        val timeStr = itemTimeEditText.text.toString()
+
+        // Create a new Calendar instance to avoid modifying the current one
+        val lostCalendar = Calendar.getInstance()
+
+        // Parse the date
+        try {
+            val dateFormat = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
+            val parsedDate = dateFormat.parse(dateStr)
+            if (parsedDate != null) {
+                lostCalendar.time = parsedDate
+            }
+
+            // Parse the time
+            val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+            val parsedTime = timeFormat.parse(timeStr)
+            if (parsedTime != null) {
+                // Extract hour, minute, second from parsed time
+                val timeCalendar = Calendar.getInstance()
+                timeCalendar.time = parsedTime
+
+                // Set the time components on the lostCalendar
+                lostCalendar.set(Calendar.HOUR_OF_DAY, timeCalendar.get(Calendar.HOUR_OF_DAY))
+                lostCalendar.set(Calendar.MINUTE, timeCalendar.get(Calendar.MINUTE))
+                lostCalendar.set(Calendar.SECOND, 0)
+                lostCalendar.set(Calendar.MILLISECOND, 0)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Error parsing date/time: ${e.message}", Toast.LENGTH_SHORT).show()
+            isSubmitting = false
+            submitButton.isEnabled = true
+            submitButton.text = "Submit"
+            return
+        }
+
+        // Format to ISO 8601 format for API
+        val apiDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+// Set the formatter timezone to UTC
+        apiDateFormat.timeZone = getTimeZone("UTC")
+
+        val dateLost = apiDateFormat.format(lostCalendar.time)
+            .toRequestBody("text/plain".toMediaTypeOrNull())
+
+
+        // Use coroutine to make the API call
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitInstance.authItemApi.createItem(
+                    title = title,
+                    description = description,
+                    contact = contact,
+                    category = category,
+                    location = location,
+                    dateFound = dateLost,
+                    image = imagePart
+                )
+
+                runOnUiThread {
+                    isSubmitting = false
+                    submitButton.isEnabled = true
+                    submitButton.text = "Submit"
+
+                    if (response.isSuccessful) {
+                        // Navigate to success screen
+                        val intent = Intent(this@ReportLostItem, LostItemReportedSuccesfully::class.java)
+                        startActivity(intent)
+                        finish()  // Optional: Close this activity
+                    } else {
+                        // Show error message
+                        Toast.makeText(
+                            this@ReportLostItem,
+                            "Error: ${response.errorBody()?.string() ?: "Unknown error"}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        Log.e("Report item", "${response.errorBody()?.string()} : ${response.code()}")
+                    }
+                }
+            } catch (e: Exception) {
+                runOnUiThread {
+                    isSubmitting = false
+                    submitButton.isEnabled = true
+                    submitButton.text = "Submit"
+                    Toast.makeText(
+                        this@ReportLostItem,
+                        "Network error: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    Log.e("Report item", "Exception: ${e.message}", e)
+                }
+            }
+        }
+    }
+
+    private fun convertBitmapToFile(bitmap: Bitmap): File {
+        // Create a file in the cache directory
+        val file = File(cacheDir, "image_${UUID.randomUUID()}.jpg")
+        file.createNewFile()
+
+        // Convert bitmap to file
+        val outputStream = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+        outputStream.flush()
+        outputStream.close()
+
+        return file
+    }
 
     private fun setupDescriptionCard() {
         // Make the entire description card clickable and focus on the EditText

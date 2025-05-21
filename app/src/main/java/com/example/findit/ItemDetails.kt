@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 
 class ItemDetails : AppCompatActivity() {
 
@@ -32,7 +33,7 @@ class ItemDetails : AppCompatActivity() {
         val date = intent.getStringExtra("date") ?: ""
         val time = intent.getStringExtra("time") ?: ""
         val place = intent.getStringExtra("place") ?: ""
-        val imageResource = intent.getIntExtra("image_resource", R.drawable.image_placeholder)
+        val imageResource = intent.getStringExtra("image_resource")
 
         // Optional extras
         val contact = intent.getStringExtra("contact") ?: ""
@@ -40,7 +41,11 @@ class ItemDetails : AppCompatActivity() {
 
         // Set data to views
         itemNameTextView.text = itemName
-        itemImageView.setImageResource(imageResource)
+        Glide.with(itemImageView.context)
+            .load(imageResource)
+            .placeholder(R.drawable.placeholder) // optional
+            .into(itemImageView)
+
         dateFoundEditText.setText(date)
         timeFoundEditText.setText(time)
         locationEditText.setText(place)
