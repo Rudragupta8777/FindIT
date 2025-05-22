@@ -78,13 +78,13 @@ class FindItem : AppCompatActivity() {
                         recyclerView.adapter = adapter
                     } ?: run {
                         // Handle case where body is null
-                        Log.e("setupRecyclerView1", "Response body is null")
+                        Log.e("setupRecyclerView", "Response body is null")
                     }
                 } else {
-                    Log.e("setupRecyclerView1", "Response not successful: ${response.code()}")
+                    Log.e("setupRecyclerView", "Response not successful: ${response.code()}")
                 }
             } catch (e: Exception) {
-                Log.e("setupRecyclerView1", "Exception: ${e.message}", e)
+                Log.e("setupRecyclerView", "Exception: ${e.message}", e)
             }
         }
     }

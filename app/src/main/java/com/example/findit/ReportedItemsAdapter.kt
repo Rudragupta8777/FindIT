@@ -16,11 +16,16 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.findit.data.ItemPost
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class ReportedItemsAdapter(
-    private var items: List<ReportedItem>,
-    private val onQrCodeClickListener: (ReportedItem) -> Unit,
-    private val onDeleteClickListener: (ReportedItem) -> Unit
+    private var items: List<ItemPost>,
+    private val onQrCodeClickListener: (ItemPost, View) -> Unit,
+    private val onDeleteClickListener: (ItemPost) -> Unit
 ) : RecyclerView.Adapter<ReportedItemsAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -44,19 +49,22 @@ class ReportedItemsAdapter(
         val item = items[position]
 
         // Set item data
-        holder.itemName.text = item.itemName
-        holder.date.text = item.date
-        holder.timeFound.text = item.time
-        holder.place.text = item.place
+        holder.itemName.text = item.title
+        val (date, time) = formatDateTime(item.dateFound)
+        holder.date.text = date
+        holder.timeFound.text = time
+        holder.place.text = item.location
 
         // Set image if available
-        item.imageResource?.let {
-            holder.itemImage.setImageResource(it)
+        item.imageUrl.let {
+            Glide.with(holder.itemView.context)
+                .load(it)
+                .into(holder.itemImage)
         }
 
         // Handle status-specific UI elements and click behavior
         when (item.status) {
-            ReportedItemStatus.CLAIMED -> {
+            "claimed" -> {
                 // For claimed items, show tick mark and make card clickable
                 holder.iconClaimed.visibility = View.VISIBLE
                 holder.iconDelete.visibility = View.GONE
@@ -71,7 +79,7 @@ class ReportedItemsAdapter(
                 holder.itemView.isClickable = true
                 holder.itemView.isFocusable = true
             }
-            ReportedItemStatus.UNCLAIMED -> {
+            "found" -> {
                 // For unclaimed items, show both delete and QR options
                 holder.iconClaimed.visibility = View.GONE
                 holder.iconDelete.visibility = View.VISIBLE
@@ -83,7 +91,7 @@ class ReportedItemsAdapter(
                 holder.itemView.isClickable = false
                 holder.itemView.isFocusable = false
             }
-            ReportedItemStatus.DELETED -> {
+            "deleted" -> {
                 // For deleted items, only show delete icon
                 holder.iconClaimed.visibility = View.GONE
                 holder.iconDelete.visibility = View.VISIBLE
@@ -99,72 +107,43 @@ class ReportedItemsAdapter(
 
         // Set click listener for QR code button
         holder.qrContainer.setOnClickListener {
-            onQrCodeClickListener(item)
+            it.isEnabled = false
+            onQrCodeClickListener(item, it)
         }
+
 
         // Set click listener for delete icon with confirmation dialog
         holder.iconDelete.setOnClickListener {
-            showDeleteConfirmation(holder.itemView.context, item)
-        }
-    }
-
-    private fun showDeleteConfirmation(context: Context, item: ReportedItem) {
-        // Create dialog using custom layout
-        val dialog = Dialog(context)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(R.layout.dialog_delete_confirmation)
-
-        // Make dialog background transparent and set rounded corners
-        dialog.window?.apply {
-            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            setLayout(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.WRAP_CONTENT
-            )
-        }
-
-        // Get references to views in the custom layout
-        val dialogTitle = dialog.findViewById<TextView>(R.id.dialog_title)
-        val dialogMessage = dialog.findViewById<TextView>(R.id.dialog_message)
-        val btnYes = dialog.findViewById<Button>(R.id.btn_yes)
-        val btnNo = dialog.findViewById<Button>(R.id.btn_no)
-
-        // Set custom message
-        dialogMessage.text = "Are you sure you want to delete '${item.itemName}'?"
-
-        // Set button click listeners
-        btnYes.setOnClickListener {
-            // Call the delete listener to handle deletion
             onDeleteClickListener(item)
-            dialog.dismiss()
         }
-
-        btnNo.setOnClickListener {
-            // User canceled the deletion
-            dialog.dismiss()
-        }
-
-        // Show the dialog
-        dialog.show()
     }
 
-    private fun navigateToClaimedItemDetails(context: Context, item: ReportedItem) {
+    private fun navigateToClaimedItemDetails(context: Context, item: ItemPost) {
         val intent = Intent(context, ClaimedItemDetails::class.java).apply {
-            putExtra("item_name", item.itemName)
-            putExtra("date", item.date)
-            putExtra("time", item.time)
-            putExtra("place", item.place)
-            putExtra("image_resource", item.imageResource)
+            putExtra("item_name", item.title)
+            val (date, time) = formatDateTime(item.dateFound)
+            putExtra("date", date)
+            putExtra("time", time)
+            putExtra("place", item.location)
+            putExtra("image_resource", item.imageUrl)
             putExtra("description", item.description)
-            putExtra("status", item.status.toString())
+            putExtra("status", item.status)
         }
         context.startActivity(intent)
     }
 
     override fun getItemCount(): Int = items.size
 
-    fun updateItems(newItems: List<ReportedItem>) {
-        this.items = newItems
-        notifyDataSetChanged()
+    fun formatDateTime(dateFound: String): Pair<String, String> {
+        val instant = Instant.parse(dateFound)
+        val zonedDateTime = instant.atZone(ZoneId.systemDefault()) // or use ZoneId.of("UTC") if you want UTC time
+
+        val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yy")
+        val timeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
+
+        val date = zonedDateTime.format(dateFormatter)
+        val time = zonedDateTime.format(timeFormatter)
+
+        return date to time
     }
 }
