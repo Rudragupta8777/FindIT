@@ -1,5 +1,6 @@
 package com.example.findit.apiService
 
+import com.example.findit.data.GetReported
 import com.example.findit.data.ItemResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -39,7 +40,7 @@ interface ItemApiService {
     suspend fun getItemById(@Path("id") itemId: String): Response<SingleItemResponse>
 
     @GET("item/user/posts")
-    suspend fun getUserPosts(): Response<Map<String, Any>>
+    suspend fun getUserPosts(): Response<GetReported>
 
     @GET("item/user/claims")
     suspend fun getUserClaims(): Response<Map<String, Any>>

@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id)) // from google-services.json
             .requestEmail()
+            .setHostedDomain("vitstudent.ac.in")
             .requestProfile() // Request user profile data including name and profile picture
             .build()
 
