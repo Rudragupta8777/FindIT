@@ -51,7 +51,6 @@ class LostFoundAdapter(private var allItems: List<Item>) :
                 .into(holder.itemImage)
         }
 
-
         // Set click listener on the entire item view
         holder.itemView.setOnClickListener {
             val context = holder.itemView.context
@@ -71,6 +70,9 @@ class LostFoundAdapter(private var allItems: List<Item>) :
             // You can add more data here if needed
             putExtra("contact", item.contact)
             putExtra("description", item.description)
+
+            // Add the reported by user name
+            putExtra("reported_by", item.postedBy.name ?: "Unknown User")
         }
         context.startActivity(intent)
     }
@@ -100,13 +102,12 @@ class LostFoundAdapter(private var allItems: List<Item>) :
         notifyDataSetChanged()
     }
 
-
     fun formatDateTime(dateFound: String): Pair<String, String> {
         val instant = Instant.parse(dateFound)
         val zonedDateTime = instant.atZone(ZoneId.systemDefault()) // or use ZoneId.of("UTC") if you want UTC time
 
         val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yy")
-        val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+        val timeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
 
         val date = zonedDateTime.format(dateFormatter)
         val time = zonedDateTime.format(timeFormatter)

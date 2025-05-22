@@ -82,4 +82,6 @@ dependencies {
     // If you also need ML Kit for barcode scanning (you imported BarcodeFormat from ML Kit)
     implementation("com.google.mlkit:barcode-scanning:17.1.0")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
+
+    implementation("androidx.core:core-splashscreen:1.0.1")
 }

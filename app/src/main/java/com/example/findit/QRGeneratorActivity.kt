@@ -1,5 +1,6 @@
 package com.example.findit
 
+import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
@@ -17,6 +19,8 @@ class QRGeneratorActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qrgenerator)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         // Get extras from intent
         val itemName = intent.getStringExtra("item_name") ?: "Unknown Item"
