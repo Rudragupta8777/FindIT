@@ -1,12 +1,14 @@
 package com.example.findit
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.example.findit.databinding.ActivityItemClaimedSuccesfullyBinding
 
 class ItemClaimedSuccesfully : AppCompatActivity() {
@@ -16,6 +18,8 @@ class ItemClaimedSuccesfully : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         binding = ActivityItemClaimedSuccesfullyBinding.inflate(layoutInflater)
         setContentView(binding.root)
