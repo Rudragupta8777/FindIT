@@ -2,12 +2,20 @@ package com.example.findit
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 
 class ClaimedItemDetails : AppCompatActivity() {
 
@@ -28,28 +36,65 @@ class ClaimedItemDetails : AppCompatActivity() {
         val contactEditText = findViewById<EditText>(R.id.contact_value)
         val descriptionEditText = findViewById<EditText>(R.id.description_value)
         val reportedByEditText = findViewById<EditText>(R.id.reported_by_value)
+        val claimedByEditText = findViewById<EditText>(R.id.claimed_by_value)
 
         // Get data from intent
         val itemName = intent.getStringExtra("item_name") ?: "Item Name"
         val date = intent.getStringExtra("date") ?: ""
         val time = intent.getStringExtra("time") ?: ""
         val place = intent.getStringExtra("place") ?: ""
-        val imageResource = intent.getIntExtra("image_resource", R.drawable.image_placeholder)
+        val imageResource = intent.getStringExtra("image_resource")
 
         // Optional extras
         val contact = intent.getStringExtra("contact") ?: ""
         val description = intent.getStringExtra("description") ?: ""
-        val reportedBy = intent.getStringExtra("reported_by") ?: ""
+        val reportedBy = intent.getStringExtra("reportedBy") ?: ""
+        val claimedBy = intent.getStringExtra("claimedBy") ?: ""
 
         // Set data to views
         itemNameTextView.text = itemName
-        itemImageView.setImageResource(imageResource)
+
+
+        if (!imageResource.isNullOrEmpty()) {
+            Glide.with(this)
+                .load(imageResource)
+                .centerCrop() // This will make the image fill the entire ImageView
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: com.bumptech.glide.request.target.Target<Drawable>,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        // Keep image invisible if load fails
+                        itemImageView.visibility = View.INVISIBLE
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        model: Any,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        // Make image visible when successfully loaded
+                        itemImageView.visibility = View.VISIBLE
+                        return false
+                    }
+                })
+                .into(itemImageView)
+        }
+
+
         dateFoundEditText.setText(date)
         timeFoundEditText.setText(time)
         locationEditText.setText(place)
         contactEditText.setText(contact)
         descriptionEditText.setText(description)
         reportedByEditText.setText(reportedBy)
+        claimedByEditText.setText(claimedBy)
 
         // Set click listeners
         backButton.setOnClickListener {

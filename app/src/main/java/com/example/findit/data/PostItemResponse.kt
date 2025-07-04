@@ -1,6 +1,6 @@
 package com.example.findit.data
 
-data class ItemPost(
+data class PostItemResponse(
     val _id: String,
     val title: String,
     val description: String,
@@ -10,9 +10,7 @@ data class ItemPost(
     val status: String,
     val location: String,
     val dateFound: String,
-    val postedBy: PostedBy,
-    val claimedBy: ClaimedBy,
-    val claimedWhen: String?,
+    val postedBy: String,
     val createdAt: String,
     val updatedAt: String
 )

@@ -17,13 +17,18 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.airbnb.lottie.LottieAnimationView
+import com.example.findit.data.TokenRequest
 import com.example.findit.databinding.ActivityQrScannerBinding
+import com.example.findit.objects.RetrofitInstance
+import com.google.gson.Gson
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
+import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -34,6 +39,8 @@ class QRScannerActivity : AppCompatActivity() {
     private lateinit var barcodeScanner: BarcodeScanner
     private lateinit var lottieAnimationView: LottieAnimationView
     private var cameraStarted = false
+    private var isProcessingQR = false
+    private var itemId = "id"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +49,7 @@ class QRScannerActivity : AppCompatActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(binding.root)
 
+        itemId = intent.getStringExtra("itemId").toString()
         // Initialize lottie animation
         lottieAnimationView = binding.lottieAnimationView
 
@@ -112,12 +120,26 @@ class QRScannerActivity : AppCompatActivity() {
                 .build()
                 .also {
                     it.setAnalyzer(cameraExecutor, QRCodeAnalyzer { qrCodes ->
-                        if (qrCodes.isNotEmpty()) {
+                        if (qrCodes.isNotEmpty() && !isProcessingQR) {
+                            isProcessingQR = true
                             val qrCode = qrCodes.first()
                             qrCode.rawValue?.let { value ->
-                                runOnUiThread {
-                                    // Navigate to the ItemClaimedSuccessfully screen
-                                    navigateToSuccessScreen(value)
+                                val token = TokenRequest(value, itemId)
+                                lifecycleScope.launch {
+                                    try{
+                                        val response = RetrofitInstance.authClaimApi.claimItem(token)
+                                        Log.e("Claim Api", "Response : ${response}")// 🔁 Your suspend function
+                                        if (response.isSuccessful) {
+                                            // You can parse response.body() if needed
+                                            navigateToSuccessScreen(value)
+                                        }else{
+                                            Toast.makeText(this@QRScannerActivity, "API Error: ${response.body()?.message}", Toast.LENGTH_SHORT).show()
+                                            isProcessingQR = false // Allow retry
+                                        }
+                                    }catch (e: Exception) {
+                                        Toast.makeText(this@QRScannerActivity, "Request failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                                        isProcessingQR = false // Allow retry
+                                    }
 
                                     // Optional: Stop scanning after successful detection
                                     stopCamera()
@@ -125,6 +147,7 @@ class QRScannerActivity : AppCompatActivity() {
                                     binding.placeholderImage.visibility = View.VISIBLE
                                     binding.btnScanQr.text = "Scan QR Code"
                                     cameraStarted = false
+                                    isProcessingQR = false
                                 }
                             }
                         }

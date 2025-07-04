@@ -3,12 +3,17 @@ package com.example.findit
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.findit.ItemReportHistory
+import com.example.findit.objects.RetrofitInstance
+import kotlinx.coroutines.launch
 
 class ItemClaimedHistory : AppCompatActivity() {
 
@@ -43,48 +48,30 @@ class ItemClaimedHistory : AppCompatActivity() {
         setupRecyclerView()
     }
 
-    private fun setupRecyclerView() {
-        // Create sample data or fetch from database/API
-        val items = createSampleClaimedItems()
 
-        // Set up adapter
-        adapter = ClaimedItemsAdapter(items)
 
-        // Set up RecyclerView
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = adapter
+    private fun setupRecyclerView(){
+        lifecycleScope.launch{
+            try{
+                val response = RetrofitInstance.authItemApi.getUserClaims()
+                if (response.isSuccessful) {
+                    response.body()?.let { getReported ->
+                        adapter = ClaimedItemsAdapter(getReported.items)
+                        // Set up the RecyclerView
+                        recyclerView.layoutManager = LinearLayoutManager(this@ItemClaimedHistory)
+                        recyclerView.adapter = adapter
+                    } ?: run {
+                        // Handle case where body is null
+                        Log.e("setupRecyclerView", "Response body is null")
+                    }
+                } else {
+                    Log.e("setupRecyclerView", "Response not successful: ${response.code()}")
+                }
+            }catch (e : Exception){
+                Log.e("setupRecyclerView", "Exception: ${e.message}", e)
+            }
+        }
     }
 
-    private fun createSampleClaimedItems(): List<ClaimedItem> {
-        // This would be replaced with actual data from your database or API
-        return listOf(
-            ClaimedItem(
-                itemName = "Calculator",
-                date = "05/08/24",
-                time = "13:20",
-                place = "Room 401",
-                imageResource = R.drawable.placeholder,
-                claimedDate = "07/08/24",
-                reportedBy = "John Doe"
-            ),
-            ClaimedItem(
-                itemName = "ID Card",
-                date = "04/08/24",
-                time = "09:45",
-                place = "Main Lobby",
-                imageResource = R.drawable.placeholder,
-                claimedDate = "06/08/24",
-                reportedBy = "Alice Smith"
-            ),
-            ClaimedItem(
-                itemName = "Headphones",
-                date = "03/08/24",
-                time = "16:30",
-                place = "Computer Lab",
-                imageResource = R.drawable.placeholder,
-                claimedDate = "05/08/24",
-                reportedBy = "Bob Johnson"
-            )
-        )
-    }
+
 }
