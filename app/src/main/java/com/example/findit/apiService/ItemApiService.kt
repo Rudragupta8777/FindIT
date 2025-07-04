@@ -43,5 +43,5 @@ interface ItemApiService {
     suspend fun getUserPosts(): Response<GetReported>
 
     @GET("item/user/claims")
-    suspend fun getUserClaims(): Response<Map<String, Any>>
+    suspend fun getUserClaims(): Response<GetReported>
 }

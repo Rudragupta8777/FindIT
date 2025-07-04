@@ -46,6 +46,7 @@ class ItemDetails : AppCompatActivity() {
         val time = intent.getStringExtra("time") ?: ""
         val place = intent.getStringExtra("place") ?: ""
         val imageResource = intent.getStringExtra("image_resource")
+        val itemId = intent.getStringExtra("itemId")
 
         // Optional extras
         val contact = intent.getStringExtra("contact") ?: ""
@@ -112,6 +113,7 @@ class ItemDetails : AppCompatActivity() {
         claimButton.setOnClickListener {
             // Launch QR Scanner Activity when claim button is clicked
             val intent = Intent(this, QRScannerActivity::class.java)
+            intent.putExtra("itemId",itemId)
             startActivity(intent)
         }
     }

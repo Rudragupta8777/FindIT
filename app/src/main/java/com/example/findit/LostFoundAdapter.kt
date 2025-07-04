@@ -70,7 +70,7 @@ class LostFoundAdapter(private var allItems: List<Item>) :
             // You can add more data here if needed
             putExtra("contact", item.contact)
             putExtra("description", item.description)
-
+            putExtra("itemId",item._id);
             // Add the reported by user name
             putExtra("reported_by", item.postedBy.name ?: "Unknown User")
         }

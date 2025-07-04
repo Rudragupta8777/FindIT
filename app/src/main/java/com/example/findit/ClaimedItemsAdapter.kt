@@ -8,8 +8,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.findit.data.ItemPost
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
-class ClaimedItemsAdapter(private var claimedItems: List<ClaimedItem>) :
+class ClaimedItemsAdapter(private var claimedItems: List<ItemPost>) :
     RecyclerView.Adapter<ClaimedItemsAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -29,14 +34,17 @@ class ClaimedItemsAdapter(private var claimedItems: List<ClaimedItem>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = claimedItems[position]
 
-        holder.itemNameValue.text = item.itemName
-        holder.dateValue.text = item.date
-        holder.timeValue.text = item.time
-        holder.placeValue.text = item.place
+        holder.itemNameValue.text = item.title
+        val (date, time) = formatDateTime(item.dateFound)
+        holder.dateValue.text = date
+        holder.timeValue.text = time
+        holder.placeValue.text = item.location
 
         // Set image if available
-        item.imageResource?.let {
-            holder.itemImage.setImageResource(it)
+        item.imageUrl.let {
+            Glide.with(holder.itemView.context)
+                .load(it)
+                .into(holder.itemImage)
         }
 
         // Set click listener to navigate to details
@@ -46,18 +54,21 @@ class ClaimedItemsAdapter(private var claimedItems: List<ClaimedItem>) :
         }
     }
 
-    private fun navigateToClaimedItemDetails(context: Context, item: ClaimedItem) {
+    private fun navigateToClaimedItemDetails(context: Context, item: ItemPost) {
         val intent = Intent(context, ClaimedItemDetails::class.java).apply {
-            putExtra("item_name", item.itemName)
-            putExtra("date", item.date)
-            putExtra("time", item.time)
-            putExtra("place", item.place)
-            putExtra("image_resource", item.imageResource)
-            putExtra("reported_by", item.reportedBy)
+            putExtra("item_name", item.title)
+            val (date, time) = formatDateTime(item.dateFound)
+            putExtra("date", date)
+            putExtra("time", time)
+            putExtra("place", item.location)
+            putExtra("image_resource", item.imageUrl)
+            putExtra("reportedBy",item.postedBy.name + " " + item.postedBy.regNo)
+            putExtra("claimedBy",item.claimedBy.name + " " + item.claimedBy.regNo)
 
             // You can add more data here if needed
-            putExtra("contact", "Contact information for this item")
-            putExtra("description", "This is a detailed description of the item that was claimed.")
+            putExtra("contact", item.contact)
+            putExtra("description", item.description)
+            putExtra("image_resource",item.imageUrl)
         }
         context.startActivity(intent)
     }
@@ -65,8 +76,21 @@ class ClaimedItemsAdapter(private var claimedItems: List<ClaimedItem>) :
     override fun getItemCount(): Int = claimedItems.size
 
     // Method to update the claimed items list
-    fun updateItems(newItems: List<ClaimedItem>) {
+    fun updateItems(newItems: List<ItemPost>) {
         claimedItems = newItems
         notifyDataSetChanged()
+    }
+
+    fun formatDateTime(dateFound: String): Pair<String, String> {
+        val instant = Instant.parse(dateFound)
+        val zonedDateTime = instant.atZone(ZoneId.systemDefault()) // or use ZoneId.of("UTC") if you want UTC time
+
+        val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yy")
+        val timeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
+
+        val date = zonedDateTime.format(dateFormatter)
+        val time = zonedDateTime.format(timeFormatter)
+
+        return date to time
     }
 }

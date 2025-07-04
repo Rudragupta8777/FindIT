@@ -128,6 +128,9 @@ class ReportedItemsAdapter(
             putExtra("image_resource", item.imageUrl)
             putExtra("description", item.description)
             putExtra("status", item.status)
+            putExtra("contact",item.contact)
+            putExtra("reportedBy",item.postedBy.name + " " + item.postedBy.regNo)
+            putExtra("claimedBy",item.claimedBy.name + " " + item.claimedBy.regNo)
         }
         context.startActivity(intent)
     }
