@@ -71,9 +71,9 @@ class ItemReportHistory : AppCompatActivity() {
                             onQrCodeClickListener = { item, view ->
                                 showQrCode(item, view)
                             },
-                            onDeleteClickListener = { item ->
-                                handleDeleteItem(item)
-                            }
+//                            onDeleteClickListener = { item ->
+//                                handleDeleteItem(item)
+//                            }
                         )
 
                         // Set up the RecyclerView

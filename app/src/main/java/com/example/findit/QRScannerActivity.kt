@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.camera.core.CameraSelector
@@ -44,6 +45,7 @@ class QRScannerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityQrScannerBinding.inflate(layoutInflater)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -125,6 +127,9 @@ class QRScannerActivity : AppCompatActivity() {
                             val qrCode = qrCodes.first()
                             qrCode.rawValue?.let { value ->
                                 val token = TokenRequest(value, itemId)
+                                Log.d("Claim API", "Request Body: ${Gson().toJson(token)}")
+
+
                                 lifecycleScope.launch {
                                     try{
                                         val response = RetrofitInstance.authClaimApi.claimItem(token)
