@@ -31,12 +31,12 @@
             android:id="@+id/intro_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:layout_marginStart="30dp"
             android:layout_marginEnd="30dp"
             android:text="Tell us more about"
             android:textColor="@color/white"
-            android:textSize="25sp"
+            android:textSize="22sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -50,7 +50,7 @@
             android:layout_marginEnd="30dp"
             android:text="what you have found"
             android:textColor="@color/white"
-            android:textSize="25sp"
+            android:textSize="22sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/intro_1" />
@@ -64,7 +64,7 @@
             android:layout_marginEnd="25dp"
             android:text="Name the found item in 2-3 words"
             android:textColor="#FFEEC3"
-            android:textSize="16sp"
+            android:textSize="14sp"
             app:layout_constraintTop_toBottomOf="@+id/intro_2"
             tools:layout_editor_absoluteX="0dp" />
 
@@ -89,6 +89,7 @@
                 android:background="@android:color/transparent"
                 android:hint="Type here..."
                 android:textSize="16sp"
+                android:inputType="textMultiLine|textCapSentences"
                 android:textColorHint="@color/white"/>
         </androidx.cardview.widget.CardView>
 
@@ -96,12 +97,12 @@
             android:id="@+id/text_item_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="20dp"
             android:layout_marginStart="25dp"
             android:layout_marginEnd="25dp"
             android:text="Choose Item Type"
             android:textColor="#FFEEC3"
-            android:textSize="16sp"
+            android:textSize="14sp"
             app:layout_constraintTop_toBottomOf="@+id/card_item_name"
             tools:layout_editor_absoluteX="0dp" />
 
@@ -132,12 +133,12 @@
             android:id="@+id/text_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="20dp"
             android:layout_marginStart="25dp"
             android:layout_marginEnd="25dp"
             android:text="When did you find it?"
             android:textColor="#FFEEC3"
-            android:textSize="16sp"
+            android:textSize="14sp"
             app:layout_constraintTop_toBottomOf="@+id/card_item_type"
             tools:layout_editor_absoluteX="0dp" />
 
@@ -169,12 +170,12 @@
             android:id="@+id/text_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="20dp"
             android:layout_marginStart="25dp"
             android:layout_marginEnd="25dp"
             android:text="Time"
             android:textColor="#FFEEC3"
-            android:textSize="16sp"
+            android:textSize="14sp"
             app:layout_constraintTop_toBottomOf="@+id/card_date"
             tools:layout_editor_absoluteX="0dp" />
 
@@ -206,12 +207,12 @@
             android:id="@+id/text_place"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="20dp"
             android:layout_marginStart="25dp"
             android:layout_marginEnd="25dp"
             android:text="Place"
             android:textColor="#FFEEC3"
-            android:textSize="16sp"
+            android:textSize="14sp"
             app:layout_constraintTop_toBottomOf="@+id/card_time"
             tools:layout_editor_absoluteX="0dp" />
 
@@ -236,6 +237,7 @@
                 android:textSize="16sp"
                 android:background="@android:color/transparent"
                 android:hint="Type here..."
+                android:inputType="textMultiLine|textCapSentences"
                 android:textColorHint="@color/white"/>
         </androidx.cardview.widget.CardView>
 
@@ -243,12 +245,12 @@
             android:id="@+id/text_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="20dp"
             android:layout_marginStart="25dp"
             android:layout_marginEnd="25dp"
             android:text="Tell us more about it"
             android:textColor="#FFEEC3"
-            android:textSize="16sp"
+            android:textSize="14sp"
             app:layout_constraintTop_toBottomOf="@+id/card_place"
             tools:layout_editor_absoluteX="0dp" />
 
@@ -288,12 +290,12 @@
             android:id="@+id/text_photo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="20dp"
             android:layout_marginStart="25dp"
             android:layout_marginEnd="25dp"
             android:text="Add a photo for reference -"
             android:textColor="#FFEEC3"
-            android:textSize="16sp"
+            android:textSize="14sp"
             app:layout_constraintTop_toBottomOf="@+id/card_description"
             tools:layout_editor_absoluteX="0dp" />
 
@@ -330,12 +332,12 @@
             android:id="@+id/text_contact"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="20dp"
             android:layout_marginStart="25dp"
             android:layout_marginEnd="25dp"
             android:text="How can we contact you on this regard?"
             android:textColor="#FFEEC3"
-            android:textSize="16sp"
+            android:textSize="14sp"
             app:layout_constraintTop_toBottomOf="@+id/card_photo"
             tools:layout_editor_absoluteX="0dp" />
 
@@ -360,6 +362,7 @@
                 android:textSize="16sp"
                 android:background="@android:color/transparent"
                 android:hint="Type here..."
+                android:inputType="textMultiLine|textCapSentences"
                 android:textColorHint="@color/white"/>
         </androidx.cardview.widget.CardView>
 

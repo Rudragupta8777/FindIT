@@ -29,10 +29,10 @@
         android:gravity="center"
         android:text="Items Claimed"
         android:textColor="#FFEEC3"
-        android:textSize="28sp"
+        android:textSize="26sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/btn_home"
-        app:layout_constraintStart_toStartOf="@+id/btn_back"
+        app:layout_constraintStart_toEndOf="@+id/btn_back"
         app:layout_constraintTop_toTopOf="@+id/btn_back"
         app:layout_constraintBottom_toBottomOf="@+id/btn_back" />
 
@@ -52,7 +52,7 @@
         android:layout_height="wrap_content"
         android:text="List of items claimed"
         android:textColor="@color/white"
-        android:textSize="24sp"
+        android:textSize="22sp"
         android:layout_marginTop="25dp"
         android:layout_marginStart="35dp"
         android:layout_marginEnd="35dp"
@@ -63,7 +63,7 @@
         android:layout_height="wrap_content"
         android:text="by you"
         android:textColor="@color/white"
-        android:textSize="24sp"
+        android:textSize="22sp"
         android:layout_marginTop="0dp"
         android:layout_marginStart="35dp"
         android:layout_marginEnd="35dp"
@@ -80,5 +80,4 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_2"
         tools:listitem="@layout/item_claimed_history" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

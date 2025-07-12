@@ -71,42 +71,45 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profile_icon" />
 
-        <!-- Email section - centered horizontally -->
-        <androidx.constraintlayout.widget.Guideline
+        <!-- Email section - centered as a group -->
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/guideline_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.25" />
-
-        <ImageView
-            android:id="@+id/email_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="5dp"
-            android:src="@drawable/email"
-            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintTop_toBottomOf="@+id/user_name" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/user_name">
 
-        <TextView
-            android:id="@+id/user_email"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:text="rudra.gupta2023@vitstudent.ac.in"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="@+id/email_icon"
-            app:layout_constraintStart_toStartOf="@+id/guideline_vertical"
-            app:layout_constraintTop_toTopOf="@+id/email_icon" />
+            <ImageView
+                android:id="@+id/email_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/email"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/user_email"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Menu Buttons - Equal spacing and consistent sizing -->
+            <TextView
+                android:id="@+id/user_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="rudra.gupta2023@vitstudent.ac.in"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/email_icon"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/user_activity"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
             android:layout_marginStart="25dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="25dp"
@@ -117,12 +120,12 @@
             app:cornerRadius="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/email_icon" />
+            app:layout_constraintTop_toBottomOf="@+id/guideline_vertical" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/about_us"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
             android:layout_marginStart="25dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="25dp"
@@ -137,8 +140,8 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/terms_and_conditions"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
             android:layout_marginStart="25dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="25dp"
@@ -153,8 +156,8 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/developer_team"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
             android:layout_marginStart="25dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="25dp"
@@ -169,8 +172,8 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/sign_out"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
             android:layout_marginStart="25dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="25dp"

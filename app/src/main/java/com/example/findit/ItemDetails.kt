@@ -17,12 +17,15 @@ import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import android.graphics.drawable.Drawable
+import android.util.Log
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatDelegate
 
 class ItemDetails : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(R.layout.activity_item_details)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -38,6 +41,7 @@ class ItemDetails : AppCompatActivity() {
         val contactEditText = findViewById<EditText>(R.id.contact_value)
         val descriptionEditText = findViewById<EditText>(R.id.description_value)
         val reportedByEditText = findViewById<EditText>(R.id.reported_by_value)
+        val reporterregnoByEditText = findViewById<EditText>(R.id.reporter_regno_value)
         val claimButton = findViewById<Button>(R.id.btn_claim)
 
         // Get data from intent
@@ -47,11 +51,13 @@ class ItemDetails : AppCompatActivity() {
         val place = intent.getStringExtra("place") ?: ""
         val imageResource = intent.getStringExtra("image_resource")
         val itemId = intent.getStringExtra("itemId")
+        Log.d("Claim API", "item id = ${itemId}")
 
-        // Optional extras
+        // Optional extras - fixed key name to match adapter
         val contact = intent.getStringExtra("contact") ?: ""
         val description = intent.getStringExtra("description") ?: ""
         val reportedBy = intent.getStringExtra("reported_by") ?: "Unknown User"
+        val reporter_reg_no = intent.getStringExtra("reporter_regno") ?: "No Reg.No"
 
         // Set data to views
         itemNameTextView.text = itemName.split(" ").joinToString(" ") { word ->
@@ -97,6 +103,7 @@ class ItemDetails : AppCompatActivity() {
         contactEditText.setText(contact)
         descriptionEditText.setText(description)
         reportedByEditText.setText(reportedBy)
+        reporterregnoByEditText.setText(reporter_reg_no)
 
         // Set click listeners
         backButton.setOnClickListener {

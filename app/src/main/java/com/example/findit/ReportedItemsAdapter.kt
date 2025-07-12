@@ -25,7 +25,8 @@ import java.time.format.DateTimeFormatter
 class ReportedItemsAdapter(
     private var items: List<ItemPost>,
     private val onQrCodeClickListener: (ItemPost, View) -> Unit,
-    private val onDeleteClickListener: (ItemPost) -> Unit
+//    private val onDeleteClickListener: (ItemPost) -> Unit
+    // Removed delete functionality
 ) : RecyclerView.Adapter<ReportedItemsAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -35,7 +36,8 @@ class ReportedItemsAdapter(
         val timeFound: TextView = itemView.findViewById(R.id.time_value)
         val place: TextView = itemView.findViewById(R.id.place_value)
         val iconClaimed: ImageView = itemView.findViewById(R.id.icon_claimed)
-        val iconDelete: ImageView = itemView.findViewById(R.id.icon_delete)
+//        Future Update
+//        val iconDelete: ImageView = itemView.findViewById(R.id.icon_delete)
         val qrContainer: LinearLayout = itemView.findViewById(R.id.qr_container)
     }
 
@@ -67,7 +69,7 @@ class ReportedItemsAdapter(
             "claimed" -> {
                 // For claimed items, show tick mark and make card clickable
                 holder.iconClaimed.visibility = View.VISIBLE
-                holder.iconDelete.visibility = View.GONE
+//                holder.iconDelete.visibility = View.GONE
                 holder.qrContainer.visibility = View.GONE
 
                 // Enable click to view details ONLY for claimed items
@@ -82,7 +84,7 @@ class ReportedItemsAdapter(
             "found" -> {
                 // For unclaimed items, show both delete and QR options
                 holder.iconClaimed.visibility = View.GONE
-                holder.iconDelete.visibility = View.VISIBLE
+//                holder.iconDelete.visibility = View.VISIBLE
                 holder.qrContainer.visibility = View.VISIBLE
 
                 // Disable click for unclaimed items
@@ -94,7 +96,7 @@ class ReportedItemsAdapter(
             "deleted" -> {
                 // For deleted items, only show delete icon
                 holder.iconClaimed.visibility = View.GONE
-                holder.iconDelete.visibility = View.VISIBLE
+//                holder.iconDelete.visibility = View.VISIBLE
                 holder.qrContainer.visibility = View.GONE
 
                 // Disable click for deleted items
@@ -113,9 +115,9 @@ class ReportedItemsAdapter(
 
 
         // Set click listener for delete icon with confirmation dialog
-        holder.iconDelete.setOnClickListener {
-            onDeleteClickListener(item)
-        }
+//        holder.iconDelete.setOnClickListener {
+//            onDeleteClickListener(item)
+//        }
     }
 
     private fun navigateToClaimedItemDetails(context: Context, item: ItemPost) {

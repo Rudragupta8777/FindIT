@@ -10,24 +10,13 @@
     tools:context=".HomeScreen">
 
     <ImageView
-        android:id="@+id/list"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="280dp"
-        android:layout_marginTop="80dp"
-        android:src="@drawable/list"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
         android:id="@+id/profile"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginTop="80dp"
+        android:layout_marginEnd="25dp"
         android:src="@drawable/profile"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.309"
-        app:layout_constraintStart_toEndOf="@+id/list"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -39,11 +28,11 @@
         android:layout_marginEnd="30dp"
         android:text="Hello again,"
         android:textColor="@color/white"
-        android:textSize="35sp"
+        android:textSize="32sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/list" />
+        app:layout_constraintTop_toBottomOf="@+id/profile" />
 
     <TextView
         android:id="@+id/user_name"
@@ -52,9 +41,9 @@
         android:layout_marginTop="4dp"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
-        android:text="Rudra!"
+        android:text="Name!"
         android:textColor="#FFEEC3"
-        android:textSize="60sp"
+        android:textSize="55sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.217"
@@ -70,7 +59,7 @@
         android:layout_marginEnd="30dp"
         android:text="What are you here for"
         android:textColor="@color/white"
-        android:textSize="25sp"
+        android:textSize="23sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/user_name" />
@@ -83,7 +72,7 @@
         android:layout_marginEnd="30dp"
         android:text="today?"
         android:textColor="@color/white"
-        android:textSize="25sp"
+        android:textSize="23sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/intro_1" />
@@ -139,5 +128,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_find_lost"
         app:layout_constraintVertical_bias="0.0" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
