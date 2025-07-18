@@ -2,6 +2,7 @@ package com.example.findit
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,6 +15,7 @@ import com.example.findit.databinding.ActivityItemClaimedSuccesfullyBinding
 class ItemClaimedSuccesfully : AppCompatActivity() {
 
     private lateinit var binding: ActivityItemClaimedSuccesfullyBinding
+    private lateinit var mediaPlayer: MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,40 +30,47 @@ class ItemClaimedSuccesfully : AppCompatActivity() {
         binding.textDisplay.visibility = View.INVISIBLE
         binding.btnHome.visibility = View.INVISIBLE
 
-        // Get QR code value if passed
-        val qrCodeValue = intent.getStringExtra("QR_CODE_VALUE")
-
-        // Set up the success animation sequence
+        // Play success sound and run animation
         setupSuccessAnimation()
 
-        // Set up the home button click listener
         binding.btnHome.setOnClickListener {
             val intent = Intent(this, HomeScreen::class.java)
             startActivity(intent)
-            finish() // Close this activity
+            finish()
         }
     }
 
     private fun setupSuccessAnimation() {
-        // Play the Lottie animation
+        // Speed up the Lottie animation
+        binding.lottieAnimationView.setSpeed(1.5f) // 🔥 Adjust speed as needed
         binding.lottieAnimationView.playAnimation()
 
-        // After 2 seconds, stop the animation loop and show the text
-        Handler(Looper.getMainLooper()).postDelayed({
-            // Stop animation loop
+        // Play the success sound
+        mediaPlayer = MediaPlayer.create(this, R.raw.success_sound)
+        mediaPlayer.setOnCompletionListener {
+            // After sound completes, stop animation and show UI
             binding.lottieAnimationView.cancelAnimation()
+            showSuccessUI()
+        }
+        mediaPlayer.start()
+    }
 
-            // Display the text and home button
-            binding.textDisplay.visibility = View.VISIBLE
-            binding.btnHome.visibility = View.VISIBLE
 
-            // You can optionally animate the text appearance
-            binding.textDisplay.alpha = 0f
-            binding.textDisplay.animate().alpha(1f).setDuration(500).start()
+    private fun showSuccessUI() {
+        binding.textDisplay.visibility = View.VISIBLE
+        binding.btnHome.visibility = View.VISIBLE
 
-            binding.btnHome.alpha = 0f
-            binding.btnHome.animate().alpha(1f).setDuration(500).start()
+        binding.textDisplay.alpha = 0f
+        binding.textDisplay.animate().alpha(1f).setDuration(500).start()
 
-        }, 2000) // 2 seconds delay
+        binding.btnHome.alpha = 0f
+        binding.btnHome.animate().alpha(1f).setDuration(500).start()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (::mediaPlayer.isInitialized) {
+            mediaPlayer.release()
+        }
     }
 }

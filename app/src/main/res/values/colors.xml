@@ -3,4 +3,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="bg">#191919</color>
+    <color name="gold">#FFEEC3</color>
+    <color name="gold_ripple">#33FFEEC3</color>
+    <color name="dark_background">#2E2D2D</color>
+    <color name="gold_transparent">#33FFEEC3</color>
 </resources>

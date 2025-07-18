@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import com.google.android.material.button.MaterialButton
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
@@ -22,6 +23,12 @@ class QRGeneratorActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Prevent screenshots and screen recording
+        window.setFlags(
+            android.view.WindowManager.LayoutParams.FLAG_SECURE,
+            android.view.WindowManager.LayoutParams.FLAG_SECURE
+        )
         enableEdgeToEdge()
         setContentView(R.layout.activity_qrgenerator)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
@@ -41,7 +48,7 @@ class QRGeneratorActivity : AppCompatActivity() {
         displayQrFromDataUri(dataUri,qrImageView)
 
         // Set up close button
-        findViewById<Button>(R.id.btn_close).setOnClickListener {
+        findViewById< MaterialButton>(R.id.btn_close).setOnClickListener {
             finish()
         }
     }

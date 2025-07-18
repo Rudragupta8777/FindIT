@@ -12,6 +12,7 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -26,11 +27,14 @@ import com.example.findit.SplashScreen
 import com.example.findit.data.ItemPost
 import com.example.findit.objects.RetrofitInstance
 import kotlinx.coroutines.launch
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 class ItemReportHistory : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ReportedItemsAdapter
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var loaderOverlay: FrameLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,11 +42,17 @@ class ItemReportHistory : AppCompatActivity() {
         setContentView(R.layout.activity_item_report_history)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        loaderOverlay = findViewById(R.id.loader_overlay)
 
         // Initialize UI elements
         val backButton = findViewById<ImageView>(R.id.btn_back)
         val homeButton = findViewById<ImageView>(R.id.btn_home)
         recyclerView = findViewById(R.id.recycler_view)
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh)
+
+        swipeRefreshLayout.setOnRefreshListener {
+            refreshItems()
+        }
 
         // Set up navigation buttons
         backButton.setOnClickListener {
@@ -61,6 +71,8 @@ class ItemReportHistory : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
+        loaderOverlay.visibility = View.VISIBLE // Show loader
+
         lifecycleScope.launch {
             try {
                 val response = RetrofitInstance.authItemApi.getUserPosts()
@@ -88,11 +100,42 @@ class ItemReportHistory : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 Log.e("setupRecyclerView", "Exception: ${e.message}", e)
+            }finally {
+                loaderOverlay.visibility = View.GONE // Hide loader after data load
+            }
+        }
+    }
+
+    private fun refreshItems() {
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitInstance.authItemApi.getUserPosts()
+                if (response.isSuccessful) {
+                    response.body()?.let { getReported ->
+                        adapter = ReportedItemsAdapter(
+                            getReported.items,
+                            onQrCodeClickListener = { item, view ->
+                                showQrCode(item, view)
+                            }
+                        )
+                        recyclerView.adapter = adapter
+                    } ?: run {
+                        Log.e("refreshItems", "Response body is null")
+                    }
+                } else {
+                    Log.e("refreshItems", "Response not successful: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("refreshItems", "Exception: ${e.message}", e)
+            } finally {
+                swipeRefreshLayout.isRefreshing = false
             }
         }
     }
 
     private fun showQrCode(item: ItemPost, view: View) {
+        loaderOverlay.visibility = View.VISIBLE // Show loader
+
         lifecycleScope.launch {
             try {
                 val response = RetrofitInstance.authClaimApi.generateQRCode(item._id)
@@ -117,6 +160,7 @@ class ItemReportHistory : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             } finally {
+                loaderOverlay.visibility = View.GONE // Hide loader after data load
                 view.isEnabled = true // 🔓 Always re-enable, success or error
             }
         }
