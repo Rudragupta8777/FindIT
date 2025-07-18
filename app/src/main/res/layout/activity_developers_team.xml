@@ -9,7 +9,7 @@
     android:background="#191919"
     tools:context=".DevelopersTeam">
 
-    <!-- Header Section -->
+    <!-- Header Section (Unchanged as requested) -->
     <ImageView
         android:id="@+id/btn_back"
         android:layout_width="15dp"
@@ -17,6 +17,9 @@
         android:layout_marginStart="25dp"
         android:layout_marginTop="70dp"
         android:src="@drawable/back"
+        android:foreground="@drawable/gold_ripple"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -43,211 +46,310 @@
         android:layout_marginTop="60dp"
         android:layout_marginEnd="25dp"
         android:src="@drawable/home"
+        android:foreground="@drawable/gold_ripple"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/pratham"
+    <!-- Developer Cards Container -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_marginTop="25dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginEnd="25dp"
-        app:cardCornerRadius="25dp"
-        android:backgroundTint="#191919"
-        android:foreground="@drawable/developer_teams_card"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:clipToPadding="false"
+        android:paddingBottom="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/developer_team">
 
-        <ImageView
-            android:id="@+id/pratham_image"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="160dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/developer_team_image" />
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/name_1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Pratham Khanduja"
-            android:textColor="#FFEEC3"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:layout_marginTop="175dp"/>
-
-        <TextView
-            android:id="@+id/role_name_1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="App &amp; Backend Developer"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:gravity="center"
-            android:layout_marginTop="215dp"/>
-        
-        <androidx.cardview.widget.CardView
-            android:id="@+id/btn_linkedin_pratham"
-            android:layout_width="145dp"
-            android:layout_height="40dp"
-            app:cardCornerRadius="10dp"
-            android:layout_marginStart="25dp"
-            android:backgroundTint="#FFEEC3"
-            android:layout_marginTop="245dp">
-
-            <ImageView
-                android:id="@+id/linkedin_icon_1"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/linkedin_icon"
-                android:layout_marginStart="20dp"
-                android:layout_gravity="center|left"/>
-
-            <TextView
-                android:id="@+id/linkedin_1"
-                android:layout_width="wrap_content"
+            <!-- Rudra Card with Floating Effect -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/pratham_card"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="LinkedIn"
-                android:textColor="@color/black"
-                android:layout_marginStart="15dp"
-                android:textSize="18sp"
-                android:layout_gravity="center"/>
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginTop="20dp"
+                android:backgroundTint="#2E2D2D"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:strokeColor="#6FFFEEC3"
+                app:strokeWidth="1.5dp">
 
-        </androidx.cardview.widget.CardView>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/btn_github_pratham"
-            android:layout_width="145dp"
-            android:layout_height="40dp"
-            app:cardCornerRadius="10dp"
-            android:layout_marginStart="185dp"
-            android:layout_marginEnd="25dp"
-            android:backgroundTint="#FFEEC3"
-            android:layout_marginTop="245dp">
+                    <!-- Profile Image with Gradient Border -->
+                    <FrameLayout
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="5dp">
 
-            <ImageView
-                android:id="@+id/github_icon_1"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/github_icon"
-                android:layout_marginStart="20dp"
-                android:layout_gravity="center|left"/>
+                        <!-- Profile Image -->
+                        <ImageView
+                            android:id="@+id/pratham_profile_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/pratham_img" />
+                    </FrameLayout>
 
-            <TextView
-                android:id="@+id/github_1"
-                android:layout_width="wrap_content"
+                    <!-- Name with Shimmer Effect -->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/pratham_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Pratham Khanduja"
+                        android:textAlignment="center"
+                        android:textColor="@color/gold"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:tag="shimmer" />
+
+                    <!-- Role with Subtitle -->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="App &amp; Backend Developer"
+                        android:textAlignment="center"
+                        android:textColor="#C5FFFFFF"
+                        android:textSize="14sp" />
+
+                    <!-- Social Links with Animated Buttons -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp">
+
+                        <!-- LinkedIn Button -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/btn_linkedin_pratham"
+                            android:layout_width="0dp"
+                            android:layout_height="48dp"
+                            android:layout_marginEnd="12dp"
+                            android:layout_weight="1"
+                            android:backgroundTint="@color/white"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="4dp"
+                            app:rippleColor="#3D8ED9">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:src="@drawable/linkedin_icon"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="LinkedIn"
+                                    android:textColor="#0A66C2"
+                                    android:textSize="16sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- GitHub Button -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/btn_github_pratham"
+                            android:layout_width="0dp"
+                            android:layout_height="48dp"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:backgroundTint="@color/white"
+                            android:outlineAmbientShadowColor="@color/white"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="4dp"
+                            app:rippleColor="#3D444D">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:src="@drawable/github_icon"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="GitHub"
+                                    android:textColor="@color/black"
+                                    android:textSize="16sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Pratham Card with Floating Effect -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/rudra_card"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="GitHub"
-                android:textColor="@color/black"
-                android:layout_marginStart="15dp"
-                android:textSize="18sp"
-                android:layout_gravity="center"/>
-        </androidx.cardview.widget.CardView>
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="32dp"
+                android:backgroundTint="#2E2D2D"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/pratham_card"
+                app:strokeColor="#6FFFEEC3"
+                app:strokeWidth="1dp">
 
-    </androidx.cardview.widget.CardView>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/rudra"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginEnd="25dp"
-        app:cardCornerRadius="25dp"
-        android:backgroundTint="#191919"
-        android:foreground="@drawable/developer_teams_card"
-        app:layout_constraintTop_toBottomOf="@id/pratham">
+                    <!-- Profile Image with Gradient Border -->
+                    <FrameLayout
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="5dp">
 
-        <ImageView
-            android:id="@+id/rudra_image"
-            android:layout_width="match_parent"
-            android:layout_height="160dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/developer_team_image" />
+                        <!-- Profile Image -->
+                        <ImageView
+                            android:id="@+id/rudra_profile_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/rudra_img" />
+                    </FrameLayout>
 
-        <TextView
-            android:id="@+id/name_2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Rudra Gupta"
-            android:textColor="#FFEEC3"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:layout_marginTop="175dp"/>
+                    <!-- Name with Shimmer Effect -->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/rudra_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Rudra Gupta"
+                        android:textAlignment="center"
+                        android:textColor="@color/gold"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:tag="shimmer" />
 
-        <TextView
-            android:id="@+id/role_name_2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="App Developer"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:gravity="center"
-            android:layout_marginTop="215dp"/>
+                    <!-- Role with Subtitle -->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="App &amp; Website Developer"
+                        android:textAlignment="center"
+                        android:textColor="#C5FFFFFF"
+                        android:textSize="14sp" />
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/btn_linkedin_rudra"
-            android:layout_width="145dp"
-            android:layout_height="40dp"
-            app:cardCornerRadius="10dp"
-            android:layout_marginStart="25dp"
-            android:backgroundTint="#FFEEC3"
-            android:layout_marginTop="245dp">
+                    <!-- Social Links with Animated Buttons -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp">
 
-            <ImageView
-                android:id="@+id/linkedin_icon_2"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/linkedin_icon"
-                android:layout_marginStart="20dp"
-                android:layout_gravity="center|left"/>
+                        <!-- LinkedIn Button -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/btn_linkedin_rudra"
+                            android:layout_width="0dp"
+                            android:layout_height="48dp"
+                            android:layout_marginEnd="12dp"
+                            android:layout_weight="1"
+                            android:backgroundTint="@color/white"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="4dp"
+                            app:rippleColor="#3D8ED9">
 
-            <TextView
-                android:id="@+id/linkedin_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="LinkedIn"
-                android:textColor="@color/black"
-                android:layout_marginStart="15dp"
-                android:textSize="18sp"
-                android:layout_gravity="center"/>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:orientation="horizontal">
 
-        </androidx.cardview.widget.CardView>
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:src="@drawable/linkedin_icon"/>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/btn_github_rudra"
-            android:layout_width="145dp"
-            android:layout_height="40dp"
-            app:cardCornerRadius="10dp"
-            android:layout_marginStart="185dp"
-            android:layout_marginEnd="25dp"
-            android:backgroundTint="#FFEEC3"
-            android:layout_marginTop="245dp">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="LinkedIn"
+                                    android:textColor="#0A66C2"
+                                    android:textSize="16sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
 
-            <ImageView
-                android:id="@+id/github_icon_2"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/github_icon"
-                android:layout_marginStart="20dp"
-                android:layout_gravity="center|left"/>
+                        <!-- GitHub Button -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/btn_github_rudra"
+                            android:layout_width="0dp"
+                            android:layout_height="48dp"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:backgroundTint="@color/white"
+                            android:outlineAmbientShadowColor="@color/white"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="4dp"
+                            app:rippleColor="#3D444D">
 
-            <TextView
-                android:id="@+id/github_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="GitHub"
-                android:textColor="@color/black"
-                android:layout_marginStart="15dp"
-                android:textSize="18sp"
-                android:layout_gravity="center"/>
-        </androidx.cardview.widget.CardView>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:orientation="horizontal">
 
-    </androidx.cardview.widget.CardView>
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:src="@drawable/github_icon"/>
 
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="GitHub"
+                                    android:textColor="@color/black"
+                                    android:textSize="16sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

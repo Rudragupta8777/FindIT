@@ -69,5 +69,26 @@
             android:layout_gravity="center"
             android:src="@drawable/google" />
     </FrameLayout>
+    <FrameLayout
+        android:id="@+id/loader_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#AA000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:indeterminate="true"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/gold" />
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

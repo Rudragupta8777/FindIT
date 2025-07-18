@@ -6,20 +6,27 @@ import android.animation.ObjectAnimator
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.provider.MediaStore
 import android.text.InputType
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
@@ -81,6 +88,9 @@ class ReportLostItem : AppCompatActivity() {
     private var selectedImageBitmap: Bitmap? = null
     private var isSubmitting = false
 
+    private lateinit var loaderOverlay: FrameLayout
+    private lateinit var vibrator: Vibrator
+
     // Activity result launcher for gallery selection
     private val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
@@ -133,12 +143,24 @@ class ReportLostItem : AppCompatActivity() {
         }
     }
 
+    private fun vibratePhone() {
+        if (vibrator.hasVibrator()) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(200)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_report_lost_item)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        loaderOverlay = findViewById(R.id.loader_overlay)
 
         // Initialize views
         itemNameEditText = findViewById(R.id.item_name)
@@ -158,6 +180,9 @@ class ReportLostItem : AppCompatActivity() {
         submitButton = findViewById(R.id.add_lost)
         val home = findViewById<ImageView>(R.id.btn_home)
         itemTypeSpinner = findViewById(R.id.item_type_spinner)
+
+        // Initialize vibrator
+        vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         // Setup Spinner
         val itemTypes = listOf("Select Item Type", "Electronics", "ID Card", "Clothing", "Books", "Accessories", "Others")
@@ -288,6 +313,8 @@ class ReportLostItem : AppCompatActivity() {
 
 
         // Use coroutine to make the API call
+        loaderOverlay.visibility = View.VISIBLE // Show loader
+
         lifecycleScope.launch {
             try {
                 val response = RetrofitInstance.authItemApi.createItem(
@@ -332,6 +359,8 @@ class ReportLostItem : AppCompatActivity() {
                     ).show()
                     Log.e("Report item", "Exception: ${e.message}", e)
                 }
+            } finally {
+                loaderOverlay.visibility = View.GONE // Hide loader after data load
             }
         }
     }
@@ -525,6 +554,8 @@ class ReportLostItem : AppCompatActivity() {
         shakeAnim.interpolator = AccelerateDecelerateInterpolator()
         shakeAnim.start()
 
+        vibratePhone()
+
         // Change border color to red
         viewToShake.foreground = ContextCompat.getDrawable(this, R.drawable.input_box_error)
     }
@@ -535,30 +566,37 @@ class ReportLostItem : AppCompatActivity() {
         // Reset border colors
         when (errorTextView) {
             errorItemName -> findViewById<CardView>(R.id.card_item_name).foreground =
-                ContextCompat.getDrawable(this, R.drawable.input_box)
+                ContextCompat.getDrawable(this, R.drawable.kt_input_box)
             errorItemType -> cardItemType.foreground =
-                ContextCompat.getDrawable(this, R.drawable.input_box)
+                ContextCompat.getDrawable(this, R.drawable.kt_input_box)
             errorDate -> cardDate.foreground =
-                ContextCompat.getDrawable(this, R.drawable.input_box)
+                ContextCompat.getDrawable(this, R.drawable.kt_input_box)
             errorTime -> cardTime.foreground =
-                ContextCompat.getDrawable(this, R.drawable.input_box)
+                ContextCompat.getDrawable(this, R.drawable.kt_input_box)
             errorPlace -> findViewById<CardView>(R.id.card_place).foreground =
-                ContextCompat.getDrawable(this, R.drawable.input_box)
+                ContextCompat.getDrawable(this, R.drawable.kt_input_box)
             errorDescription -> cardDescription.foreground =
-                ContextCompat.getDrawable(this, R.drawable.input_box)
+                ContextCompat.getDrawable(this, R.drawable.kt_input_box)
             errorPhoto -> cardPhoto.foreground =
                 ContextCompat.getDrawable(this, R.drawable.photo_input_box)
             errorContact -> findViewById<CardView>(R.id.card_contact).foreground =
-                ContextCompat.getDrawable(this, R.drawable.input_box)
+                ContextCompat.getDrawable(this, R.drawable.kt_input_box)
         }
     }
 
     private fun setupDatePicker() {
-        // Make both the CardView and EditText clickable for better UX
+        itemDateEditText.apply {
+            inputType = InputType.TYPE_NULL
+            showSoftInputOnFocus = false
+            isFocusable = false
+            isFocusableInTouchMode = false
+            keyListener = null
+        }
         val dateClickListener = {
-            // Create DatePickerDialog
+            // Create DatePickerDialog with custom theme
             val datePickerDialog = DatePickerDialog(
                 this,
+                R.style.CustomDatePicker,
                 { _, year, month, dayOfMonth ->
                     calendar.set(Calendar.YEAR, year)
                     calendar.set(Calendar.MONTH, month)
@@ -570,20 +608,41 @@ class ReportLostItem : AppCompatActivity() {
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
             )
+
+            // Set button colors
+            datePickerDialog.setOnShowListener {
+                datePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE)?.setTextColor(ContextCompat.getColor(this, R.color.gold))
+                datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE)?.setTextColor(ContextCompat.getColor(this, R.color.gold))
+
+                // Adjust dialog width for large screens
+                val displayMetrics = DisplayMetrics()
+                windowManager.defaultDisplay.getMetrics(displayMetrics)
+                val screenWidth = displayMetrics.widthPixels
+                val maxDialogWidth = (screenWidth * 0.8).toInt() // 90% of screen width
+
+                datePickerDialog.window?.setLayout(maxDialogWidth, WindowManager.LayoutParams.WRAP_CONTENT)
+            }
+
             datePickerDialog.show()
         }
 
-        // Set the click listener to both the card and the edit text
         cardDate.setOnClickListener { dateClickListener() }
         itemDateEditText.setOnClickListener { dateClickListener() }
     }
 
     private fun setupTimePicker() {
-        // Make both the CardView and EditText clickable for better UX
+        itemTimeEditText.apply {
+            inputType = InputType.TYPE_NULL
+            showSoftInputOnFocus = false
+            isFocusable = false
+            isFocusableInTouchMode = false
+            keyListener = null
+        }
         val timeClickListener = {
-            // Create TimePickerDialog
+            // Create TimePickerDialog with custom theme
             val timePickerDialog = TimePickerDialog(
                 this,
+                R.style.CustomTimePicker,
                 { _, hourOfDay, minute ->
                     calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                     calendar.set(Calendar.MINUTE, minute)
@@ -592,12 +651,26 @@ class ReportLostItem : AppCompatActivity() {
                 },
                 calendar.get(Calendar.HOUR_OF_DAY),
                 calendar.get(Calendar.MINUTE),
-                false // 24-hour format
+                false
             )
+
+            // Set button colors and adjust dialog width
+            timePickerDialog.setOnShowListener {
+                timePickerDialog.getButton(TimePickerDialog.BUTTON_POSITIVE)?.setTextColor(ContextCompat.getColor(this, R.color.gold))
+                timePickerDialog.getButton(TimePickerDialog.BUTTON_NEGATIVE)?.setTextColor(ContextCompat.getColor(this, R.color.gold))
+
+                // Adjust dialog width for large screens (80% of screen width)
+                val displayMetrics = DisplayMetrics()
+                windowManager.defaultDisplay.getMetrics(displayMetrics)
+                val screenWidth = displayMetrics.widthPixels
+                val maxDialogWidth = (screenWidth * 0.8).toInt()
+
+                timePickerDialog.window?.setLayout(maxDialogWidth, WindowManager.LayoutParams.WRAP_CONTENT)
+            }
+
             timePickerDialog.show()
         }
 
-        // Set the click listener to both the card and the edit text
         cardTime.setOnClickListener { timeClickListener() }
         itemTimeEditText.setOnClickListener { timeClickListener() }
     }
@@ -605,12 +678,12 @@ class ReportLostItem : AppCompatActivity() {
     private fun setupPhotoSelection() {
         // Make entire card photo clickable
         cardPhoto.setOnClickListener {
-            showImagePickerDialog()
+            showImagePickerDialog() // This will now first show the NSFW warning
         }
 
         // Also keep the image view clickable for better UX
         photoImageView.setOnClickListener {
-            showImagePickerDialog()
+            showImagePickerDialog() // This will now first show the NSFW warning
         }
     }
 
@@ -625,6 +698,34 @@ class ReportLostItem : AppCompatActivity() {
     }
 
     private fun showImagePickerDialog() {
+        // First show the NSFW warning
+        showNsfwWarning()
+    }
+
+    private fun showNsfwWarning() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_nsfw_warning, null)
+        val builder = AlertDialog.Builder(this).apply {
+            setView(dialogView)
+            setCancelable(true)
+        }
+
+        val dialog = builder.create()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialogView.findViewById<Button>(R.id.btn_cancel).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialogView.findViewById<Button>(R.id.btn_agree).setOnClickListener {
+            dialog.dismiss()
+            // Now show the actual image picker options
+            showImageSelectionOptions()
+        }
+
+        dialog.show()
+    }
+
+    private fun showImageSelectionOptions() {
         val options = arrayOf("Take Photo", "Choose from Gallery", "Cancel")
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Add Photo")

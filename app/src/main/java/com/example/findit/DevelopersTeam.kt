@@ -4,11 +4,17 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
+import com.google.android.material.card.MaterialCardView
 
 class DevelopersTeam : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,61 +24,74 @@ class DevelopersTeam : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
-        // Initialize UI elements
         setupNavigation()
         setupSocialLinks()
-
-        val back = findViewById<ImageView>(R.id.btn_back)
-        back.setOnClickListener {
-            val intent = Intent(this, MyProfile::class.java)
-            startActivity(intent)
-        }
-
-        val home = findViewById<ImageView>(R.id.btn_home)
-        home.setOnClickListener {
-            val intent = Intent(this, HomeScreen::class.java)
-            startActivity(intent)
-        }
+        setupProfileCards()
     }
 
     private fun setupNavigation() {
-        // Set up back button
         val btnBack = findViewById<ImageView>(R.id.btn_back)
         btnBack.setOnClickListener {
             finish()
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
         }
 
-        // Set up home button
         val btnHome = findViewById<ImageView>(R.id.btn_home)
         btnHome.setOnClickListener {
-            // Navigate to your home activity
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, HomeScreen::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
     }
 
+    private fun setupProfileCards() {
+        val rudraCard = findViewById<MaterialCardView>(R.id.rudra_card)
+        val prathamCard = findViewById<MaterialCardView>(R.id.pratham_card)
+
+        // Add elevation animation when cards are pressed
+        listOf(rudraCard, prathamCard).forEach { card ->
+            card.setOnClickListener {
+                animateCardClick(card)
+            }
+        }
+
+        // Add shimmer effect to names
+        val shimmer = AlphaAnimation(0.7f, 1.0f).apply {
+            duration = 1500
+            repeatMode = Animation.REVERSE
+            repeatCount = Animation.INFINITE
+        }
+
+        rudraCard.findViewWithTag<TextView>("shimmer").startAnimation(shimmer)
+        prathamCard.findViewWithTag<TextView>("shimmer").startAnimation(shimmer)
+    }
+
     private fun setupSocialLinks() {
-        // Find all buttons
-        val btnLinkedinPratham = findViewById<CardView>(R.id.btn_linkedin_pratham)
-        val btnGithubPratham = findViewById<CardView>(R.id.btn_github_pratham)
-        val btnLinkedinRudra = findViewById<CardView>(R.id.btn_linkedin_rudra)
-        val btnGithubRudra = findViewById<CardView>(R.id.btn_github_rudra)
-
-        // Apply ripple effect to all buttons
-        applyButtonEffect(btnLinkedinPratham)
-        applyButtonEffect(btnGithubPratham)
-        applyButtonEffect(btnLinkedinRudra)
-        applyButtonEffect(btnGithubRudra)
-
-        // Define the social profile URLs
-        // Replace these URLs with the actual profile URLs
+        // Social profile URLs
         val linkedinPratham = "https://www.linkedin.com/in/pratham-khanduja/"
         val githubPratham = "https://github.com/pratham-developer"
         val linkedinRudra = "https://www.linkedin.com/in/rudra-gupta-36827828b/"
         val githubRudra = "https://github.com/Rudragupta8777"
 
-        // Set click listeners for Pratham's social links
+        // Pratham's buttons
+        val btnLinkedinPratham = findViewById<MaterialCardView>(R.id.btn_linkedin_pratham)
+        val btnGithubPratham = findViewById<MaterialCardView>(R.id.btn_github_pratham)
+
+        // Rudra's buttons
+        val btnLinkedinRudra = findViewById<MaterialCardView>(R.id.btn_linkedin_rudra)
+        val btnGithubRudra = findViewById<MaterialCardView>(R.id.btn_github_rudra)
+
+        // Apply ripple effects
+        listOf(btnLinkedinPratham, btnGithubPratham, btnLinkedinRudra, btnGithubRudra).forEach {
+            it.apply {
+                isClickable = true
+                isFocusable = true
+                foreground = ContextCompat.getDrawable(context, R.drawable.button_ripple)
+            }
+        }
+
+        // Set click listeners with animations
         btnLinkedinPratham.setOnClickListener {
             animateButtonClick(it)
             openUrl(linkedinPratham)
@@ -83,7 +102,6 @@ class DevelopersTeam : AppCompatActivity() {
             openUrl(githubPratham)
         }
 
-        // Set click listeners for Rudra's social links
         btnLinkedinRudra.setOnClickListener {
             animateButtonClick(it)
             openUrl(linkedinRudra)
@@ -95,25 +113,17 @@ class DevelopersTeam : AppCompatActivity() {
         }
     }
 
-    // Helper method to open URLs
     private fun openUrl(url: String) {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        startActivity(intent)
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+        } catch (e: Exception) {
+            // Handle exception if no browser available
+        }
     }
 
-    // Helper method to apply button-like effect
-    private fun applyButtonEffect(view: CardView) {
-        // Make the view clickable (important for ripple effect)
-        view.isClickable = true
-        view.isFocusable = true
-
-        // Set foreground to ripple drawable (pre-defined in Android)
-        // Instead of using the theme's selectableItemBackground
-        view.foreground = getDrawable(R.drawable.button_ripple)
-    }
-
-    // Helper method to add click animation
-    private fun animateButtonClick(view: android.view.View) {
+    private fun animateButtonClick(view: View) {
         view.animate()
             .scaleX(0.95f)
             .scaleY(0.95f)
@@ -126,5 +136,29 @@ class DevelopersTeam : AppCompatActivity() {
                     .start()
             }
             .start()
+    }
+
+    private fun animateCardClick(card: MaterialCardView) {
+        card.animate()
+            .scaleX(0.98f)
+            .scaleY(0.98f)
+            .setDuration(100)
+            .withEndAction {
+                card.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(100)
+                    .start()
+            }
+            .start()
+
+        // Elevation effect
+        card.cardElevation = 16f
+        card.postDelayed({ card.cardElevation = 8f }, 200)
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 }

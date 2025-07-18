@@ -52,6 +52,16 @@ object RetrofitInstance {
     private class FirebaseAuthInterceptor : Interceptor {
         override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
             val originalRequest = chain.request()
+            /*val apiKey = try {
+                Class.forName("com.example.findit.BuildConfig")
+                    .getDeclaredField("API_KEY")
+                    .apply { isAccessible = true }
+                    .get(null) as? String ?: ""
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to get API_KEY from BuildConfig", e)
+                ""
+            }*/
+            val apiKey = AppConfig.apiKey
 
             // Check if user is signed in
             val currentUser = FirebaseAuth.getInstance().currentUser
@@ -75,9 +85,11 @@ object RetrofitInstance {
             return if (token.isNotEmpty()) {
                 val newRequest = originalRequest.newBuilder()
                     .header("Authorization", "Bearer $token")
+                    .header("x-api-key",apiKey)
                     .build()
                 Log.d(TAG, "Adding fresh Firebase token to request")
                 chain.proceed(newRequest)
+
             } else {
                 Log.w(TAG, "Proceeding with request without token")
                 chain.proceed(originalRequest)

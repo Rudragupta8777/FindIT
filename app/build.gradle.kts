@@ -1,3 +1,5 @@
+import java.util.Properties
+import com.android.build.gradle.BaseExtension
 plugins {
     id("com.google.gms.google-services")
     alias(libs.plugins.android.application)
@@ -8,14 +10,24 @@ android {
     namespace = "com.example.findit"
     compileSdk = 35
 
+    buildFeatures {
+        buildConfig = true
+        viewBinding = true
+    }
+
+
     defaultConfig {
         applicationId = "com.example.findit"
         minSdk = 28
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        val localProperties = Properties().apply {
+            load(rootProject.file("local.properties").inputStream())
+        }
+        buildConfigField("String", "API_KEY", "\"${localProperties.getProperty("API_KEY")}\"")
     }
 
     buildTypes {
@@ -70,7 +82,7 @@ dependencies {
     implementation ("com.squareup.okhttp3:okhttp:4.11.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.11.0")
 
-// Coroutines for async operations
+    // Coroutines for async operations
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
@@ -84,4 +96,7 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.16.0")
 
     implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
+    implementation("com.google.android.material:material:1.11.0")
 }

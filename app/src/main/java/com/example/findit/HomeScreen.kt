@@ -64,5 +64,6 @@ class HomeScreen : AppCompatActivity() {
             val intent = Intent(this, ReportLostItem::class.java)
             startActivity(intent)
         }
+
     }
 }

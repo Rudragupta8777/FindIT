@@ -4,12 +4,15 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.FrameLayout
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.lifecycleScope
+import com.example.findit.objects.AppConfig
 import com.example.findit.objects.RetrofitInstance
 import com.google.android.gms.auth.api.signin.*
 import com.google.android.gms.common.api.ApiException
@@ -21,6 +24,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var loaderOverlay: FrameLayout
+    private lateinit var progressBar: ProgressBar
+    private lateinit var signInBtn: FrameLayout
 
     companion object {
         private const val RC_SIGN_IN = 1001
@@ -50,11 +56,16 @@ class MainActivity : AppCompatActivity() {
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        val signInBtn = findViewById<FrameLayout>(R.id.bt_sign_in)
+        signInBtn = findViewById<FrameLayout>(R.id.bt_sign_in)
         /*googleSignInClient.signOut().addOnCompleteListener {
             val signInIntent = googleSignInClient.signInIntent
             startActivityForResult(signInIntent, RC_SIGN_IN)
         }*/
+        loaderOverlay = findViewById(R.id.loader_overlay)
+        progressBar = findViewById(R.id.progressBar)
+
+
+
         signInBtn.setOnClickListener(){
             googleSignInClient.signOut().addOnCompleteListener {
                 val signInIntent = googleSignInClient.signInIntent
@@ -70,7 +81,7 @@ class MainActivity : AppCompatActivity() {
             try {
 
                 // Make the API call
-                val response = RetrofitInstance.publicUserApi.serverStatus()
+                val response = RetrofitInstance.publicUserApi.serverStatus(AppConfig.apiKey)
                 if (response.isSuccessful && response.body() != null) {
                     Log.d(TAG, "Backend Connected ✅")
                     Toast.makeText(
@@ -100,55 +111,59 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        // Check if user is already signed in with Firebase
-        //val currentUser = auth.currentUser
-        /*if (currentUser != null) {
-            // Firebase user exists - attempt backend login
-            attemptBackendLogin(currentUser.email ?: "")
-        }*/
+
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            // User is already signed in, proceed to HomeScreen
+            attemptBackendLogin()
+        }
     }
 
     private fun attemptBackendLogin() {
-        // Show a loading indicator if needed
+        progressBar.visibility = View.VISIBLE
+        loaderOverlay.visibility = View.VISIBLE
+        signInBtn.isEnabled = false
 
         lifecycleScope.launch {
             try {
-
-                // Make the API call
                 val response = RetrofitInstance.authUserApi.loginUser()
+
 
                 if (response.isSuccessful && response.body() != null) {
                     Log.d(TAG, "Backend login successful")
-                    // Navigate to home screen on successful login
+
+                    // ✅ Hide loader before navigation
+                    progressBar.visibility = View.GONE
+                    loaderOverlay.visibility = View.GONE
+
                     val intent = Intent(this@MainActivity, HomeScreen::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     intent.putExtra("name", response.body()?.user?.name)
                     startActivity(intent)
                     finish()
                 } else {
-                    Log.w(TAG, "Backend login failed: ${response.code()}")
-                    // Stay on login screen - backend login failed
+                    progressBar.visibility = View.GONE
+                    loaderOverlay.visibility = View.GONE
                     Toast.makeText(
                         this@MainActivity,
                         "Login failed: ${response.message()}",
                         Toast.LENGTH_SHORT
                     ).show()
-
-                    // Sign out from Firebase since backend login failed
                     auth.signOut()
                 }
             } catch (e: Exception) {
+                progressBar.visibility = View.GONE
+                loaderOverlay.visibility = View.GONE
                 Log.e(TAG, "Error during backend login", e)
                 Toast.makeText(
                     this@MainActivity,
                     "Login error: ${e.localizedMessage}",
                     Toast.LENGTH_SHORT
                 ).show()
-
-                // Sign out from Firebase since backend login failed
                 auth.signOut()
+            }finally {
+                signInBtn.isEnabled = true
             }
-
-            // Hide loading indicator if needed
         }
     }
 
@@ -162,6 +177,10 @@ class MainActivity : AppCompatActivity() {
                 val email = account.email ?: ""
 
                 if (email.endsWith("@vitstudent.ac.in")) {
+                    // Show loader immediately after email selection
+                    progressBar.visibility = View.VISIBLE
+                    loaderOverlay.visibility = View.VISIBLE
+
                     firebaseAuthWithGoogle(account.idToken!!, account)
                 } else {
                     Toast.makeText(this, "Only @vitstudent.ac.in emails are allowed", Toast.LENGTH_SHORT).show()
@@ -179,8 +198,16 @@ class MainActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Firebase authentication successful, now try backend login
+                    val sharedPref = getSharedPreferences("UserPrefs", MODE_PRIVATE)
+                    sharedPref.edit().putString("profilePicUrl", account.photoUrl?.toString() ?: "").apply()
+                    sharedPref.edit().putString("userName", account.displayName ?: "").apply()
+
+                    loaderOverlay.visibility = View.VISIBLE
+                    progressBar.visibility = View.VISIBLE
                     attemptBackendLogin()
-                } else {
+                }else {
+                    progressBar.visibility = View.GONE
+                    loaderOverlay.visibility = View.GONE
                     Toast.makeText(this, "Authentication Failed.", Toast.LENGTH_SHORT).show()
                 }
             }

@@ -15,6 +15,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.findit.data.ItemPost
@@ -23,10 +24,9 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 class ReportedItemsAdapter(
-    private var items: List<ItemPost>,
+    internal var items: List<ItemPost>,
     private val onQrCodeClickListener: (ItemPost, View) -> Unit,
-//    private val onDeleteClickListener: (ItemPost) -> Unit
-    // Removed delete functionality
+    private val onDeleteClickListener: (ItemPost) -> Unit
 ) : RecyclerView.Adapter<ReportedItemsAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -36,8 +36,7 @@ class ReportedItemsAdapter(
         val timeFound: TextView = itemView.findViewById(R.id.time_value)
         val place: TextView = itemView.findViewById(R.id.place_value)
         val iconClaimed: ImageView = itemView.findViewById(R.id.icon_claimed)
-//        Future Update
-//        val iconDelete: ImageView = itemView.findViewById(R.id.icon_delete)
+        val iconDelete: ImageView = itemView.findViewById(R.id.icon_delete)
         val qrContainer: LinearLayout = itemView.findViewById(R.id.qr_container)
     }
 
@@ -69,7 +68,7 @@ class ReportedItemsAdapter(
             "claimed" -> {
                 // For claimed items, show tick mark and make card clickable
                 holder.iconClaimed.visibility = View.VISIBLE
-//                holder.iconDelete.visibility = View.GONE
+                holder.iconDelete.visibility = View.GONE
                 holder.qrContainer.visibility = View.GONE
 
                 // Enable click to view details ONLY for claimed items
@@ -84,22 +83,10 @@ class ReportedItemsAdapter(
             "found" -> {
                 // For unclaimed items, show both delete and QR options
                 holder.iconClaimed.visibility = View.GONE
-//                holder.iconDelete.visibility = View.VISIBLE
+                holder.iconDelete.visibility = View.VISIBLE
                 holder.qrContainer.visibility = View.VISIBLE
 
                 // Disable click for unclaimed items
-                holder.itemView.setOnClickListener(null)
-                // Remove visual feedback for clickable items
-                holder.itemView.isClickable = false
-                holder.itemView.isFocusable = false
-            }
-            "deleted" -> {
-                // For deleted items, only show delete icon
-                holder.iconClaimed.visibility = View.GONE
-//                holder.iconDelete.visibility = View.VISIBLE
-                holder.qrContainer.visibility = View.GONE
-
-                // Disable click for deleted items
                 holder.itemView.setOnClickListener(null)
                 // Remove visual feedback for clickable items
                 holder.itemView.isClickable = false
@@ -115,9 +102,9 @@ class ReportedItemsAdapter(
 
 
         // Set click listener for delete icon with confirmation dialog
-//        holder.iconDelete.setOnClickListener {
-//            onDeleteClickListener(item)
-//        }
+        holder.iconDelete.setOnClickListener {
+            onDeleteClickListener(item)
+        }
     }
 
     private fun navigateToClaimedItemDetails(context: Context, item: ItemPost) {
@@ -151,4 +138,23 @@ class ReportedItemsAdapter(
 
         return date to time
     }
+
+    fun removeItem(position: Int) {
+        val newList = items.toMutableList().apply { removeAt(position) }
+        updateItems(newList)
+    }
+
+    fun updateItems(newItems: List<ItemPost>) {
+        val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun getOldListSize() = items.size
+            override fun getNewListSize() = newItems.size
+            override fun areItemsTheSame(oldPos: Int, newPos: Int) =
+                items[oldPos]._id == newItems[newPos]._id
+            override fun areContentsTheSame(oldPos: Int, newPos: Int) =
+                items[oldPos] == newItems[newPos]
+        })
+        items = newItems
+        diffResult.dispatchUpdatesTo(this)
+    }
+
 }

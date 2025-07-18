@@ -12,6 +12,7 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -26,11 +27,14 @@ import com.example.findit.SplashScreen
 import com.example.findit.data.ItemPost
 import com.example.findit.objects.RetrofitInstance
 import kotlinx.coroutines.launch
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 class ItemReportHistory : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ReportedItemsAdapter
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var loaderOverlay: FrameLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,11 +42,17 @@ class ItemReportHistory : AppCompatActivity() {
         setContentView(R.layout.activity_item_report_history)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        loaderOverlay = findViewById(R.id.loader_overlay)
 
         // Initialize UI elements
         val backButton = findViewById<ImageView>(R.id.btn_back)
         val homeButton = findViewById<ImageView>(R.id.btn_home)
         recyclerView = findViewById(R.id.recycler_view)
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh)
+
+        swipeRefreshLayout.setOnRefreshListener {
+            refreshItems()
+        }
 
         // Set up navigation buttons
         backButton.setOnClickListener {
@@ -61,6 +71,8 @@ class ItemReportHistory : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
+        loaderOverlay.visibility = View.VISIBLE // Show loader
+
         lifecycleScope.launch {
             try {
                 val response = RetrofitInstance.authItemApi.getUserPosts()
@@ -71,9 +83,9 @@ class ItemReportHistory : AppCompatActivity() {
                             onQrCodeClickListener = { item, view ->
                                 showQrCode(item, view)
                             },
-//                            onDeleteClickListener = { item ->
-//                                handleDeleteItem(item)
-//                            }
+                            onDeleteClickListener = { item ->
+                                handleDeleteItem(item)
+                            }
                         )
 
                         // Set up the RecyclerView
@@ -88,11 +100,45 @@ class ItemReportHistory : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 Log.e("setupRecyclerView", "Exception: ${e.message}", e)
+            }finally {
+                loaderOverlay.visibility = View.GONE // Hide loader after data load
+            }
+        }
+    }
+
+    private fun refreshItems() {
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitInstance.authItemApi.getUserPosts()
+                if (response.isSuccessful) {
+                    response.body()?.let { getReported ->
+                        adapter = ReportedItemsAdapter(
+                            getReported.items,
+                            onQrCodeClickListener = { item, view ->
+                                showQrCode(item, view)
+                            },
+                            onDeleteClickListener = { item ->
+                                handleDeleteItem(item)
+                            }
+                        )
+                        recyclerView.adapter = adapter
+                    } ?: run {
+                        Log.e("refreshItems", "Response body is null")
+                    }
+                } else {
+                    Log.e("refreshItems", "Response not successful: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("refreshItems", "Exception: ${e.message}", e)
+            } finally {
+                swipeRefreshLayout.isRefreshing = false
             }
         }
     }
 
     private fun showQrCode(item: ItemPost, view: View) {
+        loaderOverlay.visibility = View.VISIBLE // Show loader
+
         lifecycleScope.launch {
             try {
                 val response = RetrofitInstance.authClaimApi.generateQRCode(item._id)
@@ -117,6 +163,7 @@ class ItemReportHistory : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             } finally {
+                loaderOverlay.visibility = View.GONE // Hide loader after data load
                 view.isEnabled = true // 🔓 Always re-enable, success or error
             }
         }
@@ -151,11 +198,7 @@ class ItemReportHistory : AppCompatActivity() {
         btnYes.setOnClickListener {
             // Delete the item
             // In a real app, this would delete the item from database
-            Toast.makeText(
-                this,
-                "Item '${item.title}' has been deleted",
-                Toast.LENGTH_SHORT
-            ).show()
+            deleteItem(item)
 
             // Refresh the list (in a real app, you would fetch the new list from database)
             //val updatedList = createSampleReportedItems().filter { it.itemName != item.itemName }
@@ -171,5 +214,44 @@ class ItemReportHistory : AppCompatActivity() {
 
         // Show the dialog
         dialog.show()
+    }
+
+    private fun deleteItem(item: ItemPost) {
+        loaderOverlay.visibility = View.VISIBLE
+
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitInstance.authItemApi.deleteItemById(item._id)
+                if (response.isSuccessful) {
+                    // Remove the item from the adapter's list directly
+                    val position = adapter.items.indexOfFirst { it._id == item._id }
+                    if (position != -1) {
+                        adapter.removeItem(position)
+                    }
+                    Toast.makeText(
+                        this@ItemReportHistory,
+                        "Item '${item.title}' has been deleted",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    // More specific error message
+                    val errorMsg = when (response.code()) {
+                        404 -> "Item not found"
+                        401 -> "Unauthorized"
+                        else -> "Failed to delete item"
+                    }
+                    Toast.makeText(this@ItemReportHistory, errorMsg, Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Delete item failed", e)
+                Toast.makeText(
+                    this@ItemReportHistory,
+                    "Network error: ${e.localizedMessage}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } finally {
+                loaderOverlay.visibility = View.GONE
+            }
+        }
     }
 }

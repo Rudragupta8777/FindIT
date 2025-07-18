@@ -22,44 +22,46 @@ class TermsAndConditions : AppCompatActivity() {
         val termsTextView = findViewById<TextView>(R.id.terms_text)
 
         // Set the formatted text with bold section titles
-        val termsText = "<b>1. Introduction</b><br>" +
-                "- Welcome to \"FindIt,\" a college-based community app developed to help students and staff find their lost items and list items they have found. By using our app, you agree to abide by the following terms and conditions. Please read them carefully.<br><br>" +
+        val termsText = """
+            <b>1. Introduction</b><br>
+            Welcome to <b>FindIt</b>, a community platform developed to assist students and staff in locating lost items and reporting found items. By using this app, you agree to the terms outlined below.<br><br>
+        
+            <b>2. Acceptance of Terms</b><br>
+            By accessing or using FindIt, you agree to be bound by these Terms and Conditions. If you do not accept these terms, please refrain from using the app.<br><br>
+        
+            <b>3. User Responsibilities</b><br>
+            &#8226; <b>Accurate Information:</b> Ensure that all details provided about found items are truthful and complete.<br>
+            &#8226; <b>Prohibited Listings:</b> Do not post items that are illegal, unsafe, or against institutional policies.<br>
+            &#8226; <b>Respectful Conduct:</b> Maintain civility and professionalism when interacting with other users. Harassment and inappropriate behavior will not be tolerated.<br><br>
+        
+            <b>4. Lost and Found Listings</b><br>
+            &#8226; <b>Found Items:</b> Accurately detail the item and the location and date it was discovered.<br>
+            &#8226; <b>Ownership Verification:</b> The claimant may be asked to provide proof of ownership to confirm the rightful owner.<br><br>
+        
+            <b>5. App Usage</b><br>
+            &#8226; <b>Non-Commercial Use:</b> The app is for personal use only within the campus community. Commercial usage is strictly prohibited.<br>
+            &#8226; <b>No Misuse:</b> Posting false or misleading information is prohibited.<br>
+            &#8226; <b>Account Responsibility:</b> You are responsible for maintaining the security of your account credentials.<br><br>
+        
+            <b>6. Privacy</b><br>
+            We prioritize your privacy. Please review the Privacy for information on how we collect, use, and protect your data.<br><br>
+        
+            <b>7. Limitation of Liability</b><br>
+            FindIt is provided "as is". We do not guarantee the recovery of lost items or the return of found items. We are not liable for any loss or damage resulting from the use of this app.<br><br>
+        
+            <b>8. Changes to Terms</b><br>
+            We may modify these Terms and Conditions at any time. Continued use of the app constitutes acceptance of any updated terms.<br><br>
+        
+            <b>9. Termination</b><br>
+            We reserve the right to suspend or terminate your access to FindIt if any terms are violated or inappropriate activity is identified.<br><br>
+        
+            <b>10. Governing Law</b><br>
+            These Terms are governed by the laws applicable in the jurisdiction of the affiliated institution. Disputes will be handled accordingly.
+        """.trimIndent()
 
-                "<b>2. Acceptance of Terms</b><br>" +
-                "- By accessing and using \"FindIt,\" you accept and agree to be bound by these terms and conditions. If you do not agree with any part of these terms, you should not use the app.<br><br>" +
-
-                "<b>3. User Responsibilities</b><br>" +
-                "- Accuracy of Information: Users must provide accurate and truthful information when listing lost or found items.<br>" +
-                "- Prohibited Items: Do not list any items that are illegal, dangerous, or prohibited by college policies.<br>" +
-                "- Respect for Others: Treat all users with respect and courtesy. Harassment, abusive language, or inappropriate behaviour will not be tolerated.<br><br>" +
-
-                "<b>4. Listing Lost and Found Items</b><br>" +
-                "- Lost Items: When listing a lost item, provide a clear and detailed description, including the date and location where it was last seen.<br>" +
-                "- Found Items: When listing a found item, provide a clear and detailed description, including the date and location where it was found.<br>" +
-                "- Ownership Verification: The person claiming a lost item may be required to provide proof of ownership to ensure the rightful owner is reunited with their property.<br><br>" +
-
-                "<b>5. App Usage</b><br>" +
-                "- No Commercial Use: The app is intended for personal use within the college community. Commercial use of the app is prohibited.<br>" +
-                "- No Misuse: Do not use the app for any fraudulent activities or to list false information.<br>" +
-                "- Account Security: You are responsible for maintaining the confidentiality of your account information and for all activities that occur under your account.<br><br>" +
-
-                "<b>6. Privacy Policy</b><br>" +
-                "- We value your privacy. Please review our Privacy Policy to understand how we collect, use, and protect your personal information.<br><br>" +
-
-                "<b>7. Limitation of Liability</b><br>" +
-                "- \"FindIt\" is provided on an \"as-is\" basis. We do not guarantee that all lost items will be found or that all found items will be returned to their rightful owners. We are not responsible for any direct, indirect, incidental, or consequential damages arising from the use of the app.<br><br>" +
-
-                "<b>8. Changes to Terms</b><br>" +
-                "- We reserve the right to modify these terms and conditions at any time. Any changes will be posted on the app, and your continued use of the app after such changes constitutes your acceptance of the new terms.<br><br>" +
-
-                "<b>9. Termination</b><br>" +
-                "- We reserve the right to terminate your access to \"FindIt\" at our discretion, without notice, if you violate these terms and conditions or engage in any conduct that we deem inappropriate.<br><br>" +
-
-                "<b>10. Governing Law</b><br>" +
-                "- These terms and conditions are governed by the laws of the jurisdiction in which the college is located. Any disputes arising from the use of the app will be resolved in accordance with these laws."
-
-        // Set the HTML formatted text
         termsTextView.text = Html.fromHtml(termsText, Html.FROM_HTML_MODE_COMPACT)
+
+
 
         val back = findViewById<ImageView>(R.id.btn_back)
         back.setOnClickListener {

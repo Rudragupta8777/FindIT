@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="16dp"
     app:cardCornerRadius="15dp"
-    app:cardBackgroundColor="#000000"
+    android:backgroundTint="#2E2D2D"
+    app:strokeColor="#6FFFEEC3"
+    app:strokeWidth="1.5dp"
     app:cardElevation="0dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -14,15 +16,23 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <ImageView
-            android:id="@+id/item_image"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/item_image1"
             android:layout_width="100dp"
             android:layout_height="120dp"
-            android:background="@drawable/box_radius"
-            android:scaleType="centerCrop"
+            app:cardCornerRadius="8dp"
+            app:strokeWidth="0dp"
+            app:cardElevation="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                android:id="@+id/item_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop" />
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:id="@+id/item_name_label"
@@ -33,7 +43,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginStart="16dp"
-            app:layout_constraintStart_toEndOf="@id/item_image"
+            app:layout_constraintStart_toEndOf="@id/item_image1"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -43,6 +53,7 @@
             android:text=""
             android:textColor="@android:color/white"
             android:textSize="14sp"
+            android:layout_marginTop="2dp"
             android:layout_marginStart="8dp"
             app:layout_constraintStart_toEndOf="@id/item_name_label"
             app:layout_constraintTop_toTopOf="@id/item_name_label"
@@ -71,19 +82,16 @@
             app:layout_constraintTop_toTopOf="@id/date_label"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!--   Future Update     -->
-        <!-- Delete icon moved to be at the end of item details -->
-<!--        <ImageView-->
-<!--            android:id="@+id/icon_delete"-->
-<!--            android:layout_width="24dp"-->
-<!--            android:layout_height="24dp"-->
-<!--            android:src="@drawable/delete"-->
-<!--            android:layout_marginStart="8dp"-->
-<!--            android:visibility="gone"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="@id/date_label"-->
-<!--            app:layout_constraintBottom_toBottomOf="@id/date_label" />-->
-
+        <ImageView
+            android:id="@+id/icon_delete"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/delete"
+            android:layout_marginStart="8dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/date_label"
+            app:layout_constraintBottom_toBottomOf="@id/date_label" />
         <TextView
             android:id="@+id/time_label"
             android:layout_width="wrap_content"
@@ -171,4 +179,4 @@
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>
