@@ -123,30 +123,26 @@ class QRScannerActivity : AppCompatActivity() {
                 .also {
                     it.setAnalyzer(cameraExecutor, QRCodeAnalyzer { qrCodes ->
                         if (qrCodes.isNotEmpty() && !isProcessingQR) {
-                            isProcessingQR = true
                             val qrCode = qrCodes.first()
                             qrCode.rawValue?.let { value ->
+                                isProcessingQR = true // 🔒 Block further scans immediately
                                 val token = TokenRequest(value, itemId)
                                 Log.d("Claim API", "Request Body: ${Gson().toJson(token)}")
 
-
                                 lifecycleScope.launch {
-                                    try{
+                                    try {
                                         val response = RetrofitInstance.authClaimApi.claimItem(token)
-                                        Log.e("Claim Api", "Response : ${response}")// 🔁 Your suspend function
+                                        Log.e("Claim Api", "Response : $response")
+
                                         if (response.isSuccessful) {
-                                            // You can parse response.body() if needed
                                             navigateToSuccessScreen(value)
-                                        }else{
-                                            Toast.makeText(this@QRScannerActivity, "API Error: ${response.body()?.message}", Toast.LENGTH_SHORT).show()
-                                            isProcessingQR = false // Allow retry
                                         }
-                                    }catch (e: Exception) {
-                                        Toast.makeText(this@QRScannerActivity, "Request failed: ${e.message}", Toast.LENGTH_SHORT).show()
-                                        isProcessingQR = false // Allow retry
+                                        // 🔕 Remove all Toasts
+                                    } catch (e: Exception) {
+                                        Log.e("Claim Api", "Request failed: ${e.message}")
                                     }
 
-                                    // Optional: Stop scanning after successful detection
+                                    // ✅ Stop scanning after response
                                     stopCamera()
                                     binding.previewView.visibility = View.GONE
                                     binding.placeholderImage.visibility = View.VISIBLE
