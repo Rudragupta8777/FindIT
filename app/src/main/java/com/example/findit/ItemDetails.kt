@@ -20,6 +20,13 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatDelegate
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.net.Uri
+import androidx.appcompat.app.AlertDialog
+import android.view.LayoutInflater
+import com.google.android.material.button.MaterialButton
 
 class ItemDetails : AppCompatActivity() {
 
@@ -68,7 +75,7 @@ class ItemDetails : AppCompatActivity() {
         if (!imageResource.isNullOrEmpty()) {
             Glide.with(this)
                 .load(imageResource)
-                .centerCrop() // This will make the image fill the entire ImageView
+                .centerCrop()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
@@ -77,7 +84,6 @@ class ItemDetails : AppCompatActivity() {
                         target: Target<Drawable>,
                         isFirstResource: Boolean
                     ): Boolean {
-                        // Keep image invisible if load fails
                         itemImageView.visibility = View.INVISIBLE
                         return false
                     }
@@ -89,7 +95,6 @@ class ItemDetails : AppCompatActivity() {
                         dataSource: DataSource,
                         isFirstResource: Boolean
                     ): Boolean {
-                        // Make image visible when successfully loaded
                         itemImageView.visibility = View.VISIBLE
                         return false
                     }
@@ -105,23 +110,126 @@ class ItemDetails : AppCompatActivity() {
         reportedByEditText.setText(reportedBy)
         reporterregnoByEditText.setText(reporter_reg_no)
 
+        // Make contact field clickable but not editable
+        contactEditText.isEnabled = true
+        contactEditText.isFocusable = false
+        contactEditText.isCursorVisible = false
+        contactEditText.keyListener = null
+
+        // Set up double-click listener for contact field
+        setupContactActions(contactEditText)
+
         // Set click listeners
         backButton.setOnClickListener {
-            finish() // Go back to previous screen
+            finish()
         }
 
         homeButton.setOnClickListener {
             val intent = Intent(this, HomeScreen::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP // Clear activity stack
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
             finish()
         }
 
         claimButton.setOnClickListener {
-            // Launch QR Scanner Activity when claim button is clicked
             val intent = Intent(this, QRScannerActivity::class.java)
-            intent.putExtra("itemId",itemId)
+            intent.putExtra("itemId", itemId)
             startActivity(intent)
+        }
+    }
+
+    private fun setupContactActions(contactEditText: EditText) {
+        var clickCount = 0
+        var lastClickTime = 0L
+        val doubleClickThreshold = 500L // milliseconds
+        val resetTime = 1000L // Reset click count after 1 second
+
+        contactEditText.setOnClickListener {
+            val currentTime = System.currentTimeMillis()
+
+            // Reset click count if too much time has passed
+            if (currentTime - lastClickTime > resetTime) {
+                clickCount = 0
+            }
+
+            clickCount++
+            lastClickTime = currentTime
+
+            if (clickCount == 1) {
+                // Double click detected
+                clickCount = 0 // Reset counter
+                val contactText = contactEditText.text.toString().trim()
+                if (contactText.isNotEmpty()) {
+                    showCustomContactDialog(contactText)
+                }
+            }
+        }
+    }
+
+    private fun isPhoneNumber(text: String): Boolean {
+        // Remove all non-digit characters for validation
+        val digitsOnly = text.replace(Regex("[^0-9]"), "")
+
+        // Check if it's exactly 10 digits (Indian mobile number)
+        // You can modify this pattern based on your region's phone number format
+        return digitsOnly.length == 10 && digitsOnly.matches(Regex("^[6-9]\\d{9}$"))
+    }
+
+    private fun showCustomContactDialog(contactText: String) {
+        val isPhone = isPhoneNumber(contactText)
+
+        // Inflate the custom dialog layout
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_copy, null)
+
+        // Get references to dialog views
+        val copyButton = dialogView.findViewById<MaterialButton>(R.id.btn_copy)
+        val callButton = dialogView.findViewById<MaterialButton>(R.id.btn_reports)
+
+        // Show or hide call button based on phone number validation
+        if (isPhone) {
+            callButton.visibility = View.VISIBLE
+        } else {
+            callButton.visibility = View.GONE
+        }
+
+        // Create the dialog
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+
+        // Set button click listeners
+        copyButton.setOnClickListener {
+            copyToClipboard(contactText)
+            dialog.dismiss()
+        }
+
+        callButton.setOnClickListener {
+            makePhoneCall(contactText)
+            dialog.dismiss()
+        }
+
+        // Make dialog background transparent to show custom background
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
+    }
+
+    private fun copyToClipboard(text: String) {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("Contact", text)
+        clipboard.setPrimaryClip(clip)
+        Toast.makeText(this, "Contact copied to clipboard", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun makePhoneCall(phoneNumber: String) {
+        try {
+            val intent = Intent(Intent.ACTION_DIAL).apply {
+                data = Uri.parse("tel:$phoneNumber")
+            }
+            startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Unable to make call", Toast.LENGTH_SHORT).show()
+            Log.e("ItemDetails", "Error making phone call", e)
         }
     }
 }

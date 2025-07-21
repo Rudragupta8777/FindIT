@@ -7,19 +7,27 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.DialogInterface.BUTTON_NEGATIVE
+import android.content.DialogInterface.BUTTON_POSITIVE
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.graphics.Matrix
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.provider.MediaStore
 import android.text.InputType
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.ContextThemeWrapper
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.AdapterView
@@ -28,6 +36,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -46,6 +56,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -154,6 +165,57 @@ class ReportLostItem : AppCompatActivity() {
         }
     }
 
+    inner class CustomSpinnerAdapter(
+        context: Context,
+        resource: Int,
+        private val items: List<String>
+    ) : ArrayAdapter<String>(context, resource, items) {
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val view = super.getView(position, convertView, parent)
+            val textView = view as TextView
+
+            // Set white text color for the selected item shown in spinner
+            textView.setTextColor(Color.WHITE)
+            textView.textSize = 18f
+
+            return view
+        }
+
+        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val view = super.getDropDownView(position, convertView, parent)
+            val textView = view as TextView
+
+            // Set white text and dark background for dropdown items
+            textView.setTextColor(Color.WHITE)
+            textView.setBackgroundColor(Color.parseColor("#2E2D2D"))
+            textView.setPadding(20, 18, 20, 18) // Increased padding for better readability
+            textView.textSize = 18f
+
+            // Add separator line at bottom of each item (except last one)
+            if (position < items.size - 1) {
+                val separatorColor = Color.parseColor("#4A4A4A")
+                textView.setCompoundDrawablesWithIntrinsicBounds(null, null, null,
+                    createSeparatorDrawable(separatorColor))
+                textView.compoundDrawablePadding = 18
+            } else {
+                // Remove separator for last item
+                textView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
+            }
+
+            return view
+        }
+
+        // Create a separator line drawable
+        private fun createSeparatorDrawable(color: Int): android.graphics.drawable.Drawable {
+            val drawable = android.graphics.drawable.GradientDrawable()
+            drawable.shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+            drawable.setColor(color)
+            drawable.setSize(-1, 2) // Full width, 2px height
+            return drawable
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -186,13 +248,41 @@ class ReportLostItem : AppCompatActivity() {
 
         // Setup Spinner
         val itemTypes = listOf("Select Item Type", "Electronics", "ID Card", "Clothing", "Books", "Accessories", "Others")
-        val adapter = ArrayAdapter(this, R.layout.spinner_item, itemTypes)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        val adapter = CustomSpinnerAdapter(this, R.layout.spinner_item, itemTypes)
         itemTypeSpinner.adapter = adapter
+
+        // Style the spinner popup with rounded corners
+        itemTypeSpinner.post {
+            try {
+                val popup = Spinner::class.java.getDeclaredField("mPopup")
+                popup.isAccessible = true
+                val listPopupWindow = popup.get(itemTypeSpinner) as? android.widget.ListPopupWindow
+
+                listPopupWindow?.let { popupWindow ->
+                    // Create rounded background drawable
+                    val backgroundDrawable = android.graphics.drawable.GradientDrawable().apply {
+                        setColor(Color.parseColor("#2E2D2D"))
+                        cornerRadius = 12f // Curved edges (12dp radius)
+                        setStroke(2, Color.parseColor("#6FFFEEC3")) // Gold border
+                    }
+                    popupWindow.setBackgroundDrawable(backgroundDrawable)
+
+                    // Add some margin/padding for better appearance
+                    popupWindow.horizontalOffset = 0
+                    popupWindow.verticalOffset = 4
+                }
+            } catch (e: Exception) {
+                // Fallback: if reflection fails, spinner will still work without rounded corners
+                e.printStackTrace()
+            }
+        }
 
         // Add spinner item selection listener
         itemTypeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                // Force text color to white for selected item (additional safety)
+                (view as? TextView)?.setTextColor(Color.WHITE)
+
                 // If user selects anything other than "Select Item Type" (position 0), consider it selected
                 itemTypeSelected = position != 0
                 if (itemTypeSelected) {
@@ -203,6 +293,12 @@ class ReportLostItem : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 itemTypeSelected = false
             }
+        }
+
+        // Force white text color after spinner setup
+        itemTypeSpinner.post {
+            val spinnerText = itemTypeSpinner.selectedView as? TextView
+            spinnerText?.setTextColor(Color.WHITE)
         }
 
         // Initialize error TextViews
@@ -242,8 +338,13 @@ class ReportLostItem : AppCompatActivity() {
         submitButton.isEnabled = false
         submitButton.text = "Submitting..."
 
-        // Prepare the image file
-        val imageFile = convertBitmapToFile(selectedImageBitmap!!)
+        // Compression happens here:
+        val compressedBitmap = compressImage(selectedImageBitmap!!)
+        val imageFile = convertBitmapToFile(compressedBitmap)
+
+        // Verify final size
+        val finalSizeMB = imageFile.length().toDouble() / (1024 * 1024)
+        Log.d("FinalSize", "Compressed to: %.2f MB".format(finalSizeMB))
 
         // Create multipart request
         val imageRequestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
@@ -362,6 +463,74 @@ class ReportLostItem : AppCompatActivity() {
             } finally {
                 loaderOverlay.visibility = View.GONE // Hide loader after data load
             }
+        }
+    }
+
+    private fun compressImage(originalBitmap: Bitmap): Bitmap {
+        // Step 1: Determine if this is a very large image
+        val isVeryLargeFile = originalBitmap.byteCount > 8_000_000 // ~8MB in memory
+
+        // Step 2: Scale down based on original size
+        var scaledBitmap = originalBitmap
+        val scaleFactor = when {
+            originalBitmap.byteCount > 15_000_000 -> 0.25f  // Extreme compression for >15MB
+            originalBitmap.byteCount > 8_000_000 -> 0.4f    // Heavy compression for 8-15MB
+            originalBitmap.byteCount > 3_000_000 -> 0.6f    // Moderate compression for 3-8MB
+            else -> 1f                                      // No scaling for small images
+        }
+
+        if (scaleFactor < 1f) {
+            scaledBitmap = scaleBitmap(originalBitmap, scaleFactor)
+        }
+
+        // Step 3: Compress with quality reduction
+        var quality = if (isVeryLargeFile) 80 else 90 // Start with lower quality for large files
+        val outputStream = ByteArrayOutputStream()
+        var lastGoodBitmap: Bitmap? = null
+
+        do {
+            outputStream.reset()
+            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
+
+            // Store the last acceptable compression
+            if (outputStream.size() <= if (isVeryLargeFile) 3_000_000 else 1_000_000) {
+                lastGoodBitmap = BitmapFactory.decodeByteArray(
+                    outputStream.toByteArray(), 0, outputStream.size()
+                )
+            }
+
+            quality -= if (isVeryLargeFile) 15 else 10 // More aggressive reduction for large files
+
+            // Early exit if we've gone too low
+            if (quality < if (isVeryLargeFile) 30 else 40) break
+        } while (outputStream.size() > if (isVeryLargeFile) 3_000_000 else 1_000_000)
+
+        return lastGoodBitmap ?: scaledBitmap.also {
+            Log.w("ImageCompression", "Using fallback scaled bitmap")
+        }
+    }
+
+    private fun scaleBitmap(bitmap: Bitmap, scaleFactor: Float): Bitmap {
+        val matrix = Matrix().apply {
+            postScale(scaleFactor, scaleFactor)
+            // Optional: Add slight sharpening for scaled-down images
+            postConcat(SharpeningMatrix(0.2f))
+        }
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
+    // Helper for slight sharpening after scaling
+    private class SharpeningMatrix(strength: Float) : Matrix() {
+        init {
+            val values = floatArrayOf(
+                1f, 0f, 0f,
+                0f, 1f, 0f,
+                0f, 0f, 1f
+            )
+            values[0] = 1 + strength
+            values[4] = 1 + strength
+            values[8] = 1 - strength * 2
+            setValues(values)
         }
     }
 
@@ -592,11 +761,12 @@ class ReportLostItem : AppCompatActivity() {
             isFocusableInTouchMode = false
             keyListener = null
         }
+
         val dateClickListener = {
-            // Create DatePickerDialog with custom theme
+            val contextThemeWrapper = ContextThemeWrapper(this, android.R.style.Theme_Holo_Dialog) // default dark theme
+
             val datePickerDialog = DatePickerDialog(
-                this,
-                R.style.CustomDatePicker,
+                contextThemeWrapper,
                 { _, year, month, dayOfMonth ->
                     calendar.set(Calendar.YEAR, year)
                     calendar.set(Calendar.MONTH, month)
@@ -607,22 +777,14 @@ class ReportLostItem : AppCompatActivity() {
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
-            )
+            ).apply {
+                datePicker.maxDate = System.currentTimeMillis()
 
-            // Set button colors
-            datePickerDialog.setOnShowListener {
-                datePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE)?.setTextColor(ContextCompat.getColor(this, R.color.gold))
-                datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE)?.setTextColor(ContextCompat.getColor(this, R.color.gold))
-
-                // Adjust dialog width for large screens
-                val displayMetrics = DisplayMetrics()
-                windowManager.defaultDisplay.getMetrics(displayMetrics)
-                val screenWidth = displayMetrics.widthPixels
-                val maxDialogWidth = (screenWidth * 0.8).toInt() // 90% of screen width
-
-                datePickerDialog.window?.setLayout(maxDialogWidth, WindowManager.LayoutParams.WRAP_CONTENT)
+                setOnShowListener {
+                    getButton(BUTTON_POSITIVE)?.setTextColor(ContextCompat.getColor(this@ReportLostItem, R.color.gold))
+                    getButton(BUTTON_NEGATIVE)?.setTextColor(ContextCompat.getColor(this@ReportLostItem, R.color.gold))
+                }
             }
-
             datePickerDialog.show()
         }
 
@@ -638,13 +800,14 @@ class ReportLostItem : AppCompatActivity() {
             isFocusableInTouchMode = false
             keyListener = null
         }
+
         val timeClickListener = {
-            // Create TimePickerDialog with custom theme
+            val contextThemeWrapper = ContextThemeWrapper(this, android.R.style.Theme_Holo_Dialog)
+
             val timePickerDialog = TimePickerDialog(
-                this,
-                R.style.CustomTimePicker,
-                { _, hourOfDay, minute ->
-                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                contextThemeWrapper,
+                { _, hour, minute ->
+                    calendar.set(Calendar.HOUR_OF_DAY, hour)
                     calendar.set(Calendar.MINUTE, minute)
                     updateTimeField()
                     hideError(errorTime)
@@ -652,22 +815,12 @@ class ReportLostItem : AppCompatActivity() {
                 calendar.get(Calendar.HOUR_OF_DAY),
                 calendar.get(Calendar.MINUTE),
                 false
-            )
-
-            // Set button colors and adjust dialog width
-            timePickerDialog.setOnShowListener {
-                timePickerDialog.getButton(TimePickerDialog.BUTTON_POSITIVE)?.setTextColor(ContextCompat.getColor(this, R.color.gold))
-                timePickerDialog.getButton(TimePickerDialog.BUTTON_NEGATIVE)?.setTextColor(ContextCompat.getColor(this, R.color.gold))
-
-                // Adjust dialog width for large screens (80% of screen width)
-                val displayMetrics = DisplayMetrics()
-                windowManager.defaultDisplay.getMetrics(displayMetrics)
-                val screenWidth = displayMetrics.widthPixels
-                val maxDialogWidth = (screenWidth * 0.8).toInt()
-
-                timePickerDialog.window?.setLayout(maxDialogWidth, WindowManager.LayoutParams.WRAP_CONTENT)
+            ).apply {
+                setOnShowListener {
+                    getButton(BUTTON_POSITIVE)?.setTextColor(ContextCompat.getColor(this@ReportLostItem, R.color.gold))
+                    getButton(BUTTON_NEGATIVE)?.setTextColor(ContextCompat.getColor(this@ReportLostItem, R.color.gold))
+                }
             }
-
             timePickerDialog.show()
         }
 
