@@ -12,6 +12,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.lifecycleScope
+import com.example.findit.objects.AppConfig
 import com.example.findit.objects.RetrofitInstance
 import com.google.android.gms.auth.api.signin.*
 import com.google.android.gms.common.api.ApiException
@@ -80,7 +81,7 @@ class MainActivity : AppCompatActivity() {
             try {
 
                 // Make the API call
-                val response = RetrofitInstance.publicUserApi.serverStatus()
+                val response = RetrofitInstance.publicUserApi.serverStatus(AppConfig.apiKey)
                 if (response.isSuccessful && response.body() != null) {
                     Log.d(TAG, "Backend Connected ✅")
                     Toast.makeText(

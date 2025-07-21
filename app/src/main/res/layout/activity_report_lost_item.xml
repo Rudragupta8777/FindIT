@@ -188,7 +188,9 @@
                     android:textCursorDrawable="@drawable/cursor_color"
                     android:background="@android:color/transparent"
                     android:hint="Choose DD/MM/YY"
-                    android:textColorHint="@color/white"/>
+                    android:textColorHint="@color/white"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"/>
             </com.google.android.material.card.MaterialCardView>
 
             <TextView
@@ -229,7 +231,9 @@
                     android:background="@android:color/transparent"
                     android:hint="Select here..."
                     android:textColor="@color/white"
-                    android:textColorHint="@color/white"/>
+                    android:textColorHint="@color/white"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"/>
             </com.google.android.material.card.MaterialCardView>
 
             <TextView

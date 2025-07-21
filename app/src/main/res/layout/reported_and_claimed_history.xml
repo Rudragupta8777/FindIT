@@ -82,19 +82,16 @@
             app:layout_constraintTop_toTopOf="@id/date_label"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!--   Future Update     -->
-        <!-- Delete icon moved to be at the end of item details -->
-<!--        <ImageView-->
-<!--            android:id="@+id/icon_delete"-->
-<!--            android:layout_width="24dp"-->
-<!--            android:layout_height="24dp"-->
-<!--            android:src="@drawable/delete"-->
-<!--            android:layout_marginStart="8dp"-->
-<!--            android:visibility="gone"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="@id/date_label"-->
-<!--            app:layout_constraintBottom_toBottomOf="@id/date_label" />-->
-
+        <ImageView
+            android:id="@+id/icon_delete"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/delete"
+            android:layout_marginStart="8dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/date_label"
+            app:layout_constraintBottom_toBottomOf="@id/date_label" />
         <TextView
             android:id="@+id/time_label"
             android:layout_width="wrap_content"

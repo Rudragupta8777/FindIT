@@ -585,6 +585,13 @@ class ReportLostItem : AppCompatActivity() {
     }
 
     private fun setupDatePicker() {
+        itemDateEditText.apply {
+            inputType = InputType.TYPE_NULL
+            showSoftInputOnFocus = false
+            isFocusable = false
+            isFocusableInTouchMode = false
+            keyListener = null
+        }
         val dateClickListener = {
             // Create DatePickerDialog with custom theme
             val datePickerDialog = DatePickerDialog(
@@ -624,6 +631,13 @@ class ReportLostItem : AppCompatActivity() {
     }
 
     private fun setupTimePicker() {
+        itemTimeEditText.apply {
+            inputType = InputType.TYPE_NULL
+            showSoftInputOnFocus = false
+            isFocusable = false
+            isFocusableInTouchMode = false
+            keyListener = null
+        }
         val timeClickListener = {
             // Create TimePickerDialog with custom theme
             val timePickerDialog = TimePickerDialog(

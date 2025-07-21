@@ -83,9 +83,9 @@ class ItemReportHistory : AppCompatActivity() {
                             onQrCodeClickListener = { item, view ->
                                 showQrCode(item, view)
                             },
-//                            onDeleteClickListener = { item ->
-//                                handleDeleteItem(item)
-//                            }
+                            onDeleteClickListener = { item ->
+                                handleDeleteItem(item)
+                            }
                         )
 
                         // Set up the RecyclerView
@@ -116,6 +116,9 @@ class ItemReportHistory : AppCompatActivity() {
                             getReported.items,
                             onQrCodeClickListener = { item, view ->
                                 showQrCode(item, view)
+                            },
+                            onDeleteClickListener = { item ->
+                                handleDeleteItem(item)
                             }
                         )
                         recyclerView.adapter = adapter
@@ -195,11 +198,7 @@ class ItemReportHistory : AppCompatActivity() {
         btnYes.setOnClickListener {
             // Delete the item
             // In a real app, this would delete the item from database
-            Toast.makeText(
-                this,
-                "Item '${item.title}' has been deleted",
-                Toast.LENGTH_SHORT
-            ).show()
+            deleteItem(item)
 
             // Refresh the list (in a real app, you would fetch the new list from database)
             //val updatedList = createSampleReportedItems().filter { it.itemName != item.itemName }
@@ -215,5 +214,44 @@ class ItemReportHistory : AppCompatActivity() {
 
         // Show the dialog
         dialog.show()
+    }
+
+    private fun deleteItem(item: ItemPost) {
+        loaderOverlay.visibility = View.VISIBLE
+
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitInstance.authItemApi.deleteItemById(item._id)
+                if (response.isSuccessful) {
+                    // Remove the item from the adapter's list directly
+                    val position = adapter.items.indexOfFirst { it._id == item._id }
+                    if (position != -1) {
+                        adapter.removeItem(position)
+                    }
+                    Toast.makeText(
+                        this@ItemReportHistory,
+                        "Item '${item.title}' has been deleted",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    // More specific error message
+                    val errorMsg = when (response.code()) {
+                        404 -> "Item not found"
+                        401 -> "Unauthorized"
+                        else -> "Failed to delete item"
+                    }
+                    Toast.makeText(this@ItemReportHistory, errorMsg, Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Delete item failed", e)
+                Toast.makeText(
+                    this@ItemReportHistory,
+                    "Network error: ${e.localizedMessage}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } finally {
+                loaderOverlay.visibility = View.GONE
+            }
+        }
     }
 }

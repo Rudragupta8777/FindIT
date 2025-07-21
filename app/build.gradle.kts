@@ -1,3 +1,5 @@
+import java.util.Properties
+import com.android.build.gradle.BaseExtension
 plugins {
     id("com.google.gms.google-services")
     alias(libs.plugins.android.application)
@@ -8,6 +10,12 @@ android {
     namespace = "com.example.findit"
     compileSdk = 35
 
+    buildFeatures {
+        buildConfig = true
+        viewBinding = true
+    }
+
+
     defaultConfig {
         applicationId = "com.example.findit"
         minSdk = 28
@@ -16,6 +24,10 @@ android {
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        val localProperties = Properties().apply {
+            load(rootProject.file("local.properties").inputStream())
+        }
+        buildConfigField("String", "API_KEY", "\"${localProperties.getProperty("API_KEY")}\"")
     }
 
     buildTypes {
