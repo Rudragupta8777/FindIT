@@ -247,7 +247,7 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/rudra_img" />
+                            android:src="@drawable/rudra_png" />
                     </FrameLayout>
 
                     <!-- Name with Shimmer Effect -->
