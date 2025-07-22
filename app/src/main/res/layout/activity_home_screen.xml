@@ -7,13 +7,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#191919"
-    tools:context=".HomeScreen">
+    tools:context=".HomeScreen"
+    android:fitsSystemWindows="true">
 
     <ImageView
         android:id="@+id/profile"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="30dp"
         android:layout_marginEnd="25dp"
         android:src="@drawable/new_profile_icon"
         android:foreground="@drawable/gold_ripple"
