@@ -7,4 +7,6 @@
     <color name="gold_ripple">#33FFEEC3</color>
     <color name="dark_background">#2E2D2D</color>
     <color name="gold_transparent">#33FFEEC3</color>
+    <color name="header">#191919</color>
+    <color name="navigation_bar_color">#191919</color>
 </resources>

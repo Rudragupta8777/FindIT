@@ -2,6 +2,7 @@ package com.example.findit
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,6 +14,7 @@ import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,11 +30,16 @@ class FindItem : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_find_item)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         loaderOverlay = findViewById(R.id.loader_overlay)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            window.navigationBarColor = ContextCompat.getColor(this, R.color.navigation_bar_color)
+            window.statusBarColor = ContextCompat.getColor(this, R.color.header)
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        }
 
         // Initialize UI elements
         val home = findViewById<ImageView>(R.id.btn_home)

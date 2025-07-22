@@ -5,8 +5,10 @@ import android.app.Dialog
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.util.Linkify
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -24,10 +26,15 @@ class MyProfile : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_my_profile)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            window.navigationBarColor = ContextCompat.getColor(this, R.color.navigation_bar_color)
+            window.statusBarColor = ContextCompat.getColor(this, R.color.header)
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        }
 
         val sharedPref = getSharedPreferences("UserPrefs", MODE_PRIVATE)
 

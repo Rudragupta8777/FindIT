@@ -3,6 +3,7 @@ package com.example.findit
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -10,6 +11,7 @@ import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import com.example.findit.databinding.ActivityItemClaimedSuccesfullyBinding
 
 class ItemClaimedSuccesfully : AppCompatActivity() {
@@ -19,9 +21,14 @@ class ItemClaimedSuccesfully : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            window.navigationBarColor = ContextCompat.getColor(this, R.color.navigation_bar_color)
+            window.statusBarColor = ContextCompat.getColor(this, R.color.header)
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        }
 
         binding = ActivityItemClaimedSuccesfullyBinding.inflate(layoutInflater)
         setContentView(binding.root)
