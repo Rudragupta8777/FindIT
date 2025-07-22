@@ -448,7 +448,7 @@ class ReportLostItem : AppCompatActivity() {
                         // Show error message
                         Toast.makeText(
                             this@ReportLostItem,
-                            "Error: ${response.errorBody()?.string() ?: "Unknown error"}",
+                            "Image is not safe for work ⚠️",
                             Toast.LENGTH_LONG
                         ).show()
                         Log.e("Report item", "${response.errorBody()?.string()} : ${response.code()}")
