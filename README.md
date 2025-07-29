@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://ik.imagekit.io/yourusername/findit-logo.png" alt="FindIt Logo" width="60%" />
+  <img src="https://ik.imagekit.io/d5u8bqewg/PaymentX/finditreadme_logo.png?updatedAt=1753820420321" alt="FindIt Logo" width="60%" />
 
   # FindIT: Lost & Found App for VIT
 
@@ -17,7 +17,7 @@
 </div>
 
 <p align="center">
-  <img src="https://ik.imagekit.io/yourusername/findit-screens.png" alt="FindIt App Screenshots" width="80%" />
+  <img src="https://raw.githubusercontent.com/Rudragupta8777/FindIT/master/app/src/main/res/drawable/App_screenshots.png" alt="FindIt App Screenshots" width="80%" />
 </p>
 
 ## 🌟 Overview
