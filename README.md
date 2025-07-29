@@ -177,7 +177,7 @@ FindIT/
 You can **download the FindIT app** directly from our official website:  
 🌐 [www.finditapp.me](https://www.finditapp.me)
 
-Or, download the APK from our [**Initial Release**](https://github.com/your-org/findit-app/releases/tag/v1.0.0) GitHub release.
+Or, download the APK from our [**Initial Release**](https://github.com/Rudragupta8777/FindIT/releases/tag/v1.0.0) GitHub release.
 
 > 🔒 *VIT Google Sign-In is required to access the app.*
 
