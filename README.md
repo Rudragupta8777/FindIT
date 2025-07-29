@@ -17,7 +17,7 @@
 </div>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Rudragupta8777/FindIT/master/app/src/main/res/drawable/App_screenshots.png" alt="FindIt App Screenshots" width="80%" />
+  <img src="https://raw.githubusercontent.com/Rudragupta8777/FindIT/master/app/src/main/res/drawable/app_screenshots.png" alt="FindIt App Screenshots" width="80%" />
 </p>
 
 ## 🌟 Overview
