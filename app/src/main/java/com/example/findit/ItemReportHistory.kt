@@ -30,6 +30,7 @@ import com.example.findit.data.ItemPost
 import com.example.findit.objects.RetrofitInstance
 import kotlinx.coroutines.launch
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.findit.Adapter.ReportedItemsAdapter
 
 class ItemReportHistory : AppCompatActivity() {
 

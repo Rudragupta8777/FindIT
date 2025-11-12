@@ -1,4 +1,4 @@
-package com.example.findit
+package com.example.findit.Adapter
 
 import android.content.Context
 import android.content.Intent
@@ -9,13 +9,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.findit.data.ItemPost
+import com.example.findit.ItemDetails
+import com.example.findit.R
+import com.example.findit.data.Item
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
-class ClaimedItemsAdapter(private var claimedItems: List<ItemPost>) :
-    RecyclerView.Adapter<ClaimedItemsAdapter.ViewHolder>() {
+class LostFoundAdapter(private var items: MutableList<Item>) :
+    RecyclerView.Adapter<LostFoundAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val itemImage: ImageView = itemView.findViewById(R.id.item_image)
@@ -27,13 +30,13 @@ class ClaimedItemsAdapter(private var claimedItems: List<ItemPost>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_claimed_history, parent, false)
+            .inflate(R.layout.item_lost_found, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = claimedItems[position]
-
+        // Use the single 'items' list
+        val item = items[position]
         holder.itemNameValue.text = item.title
         val (date, time) = formatDateTime(item.dateFound)
         holder.dateValue.text = date
@@ -47,38 +50,45 @@ class ClaimedItemsAdapter(private var claimedItems: List<ItemPost>) :
                 .into(holder.itemImage)
         }
 
-        // Set click listener to navigate to details
+        // Set click listener on the entire item view
         holder.itemView.setOnClickListener {
             val context = holder.itemView.context
-            navigateToClaimedItemDetails(context, item)
+            navigateToItemDetails(context, item)
         }
     }
 
-    private fun navigateToClaimedItemDetails(context: Context, item: ItemPost) {
-        val intent = Intent(context, ClaimedItemDetails::class.java).apply {
+    private fun navigateToItemDetails(context: Context, item: Item) {
+        val intent = Intent(context, ItemDetails::class.java).apply {
             putExtra("item_name", item.title)
             val (date, time) = formatDateTime(item.dateFound)
             putExtra("date", date)
             putExtra("time", time)
             putExtra("place", item.location)
             putExtra("image_resource", item.imageUrl)
-            putExtra("reportedBy",item.postedBy.name + " " + item.postedBy.regNo)
-            putExtra("claimedBy",item.claimedBy.name + " " + item.claimedBy.regNo)
 
             // You can add more data here if needed
             putExtra("contact", item.contact)
+            putExtra("itemId",item._id);
             putExtra("description", item.description)
-            putExtra("image_resource",item.imageUrl)
+            putExtra("reported_by", item.postedBy.name ?: "Unknown User")
+            putExtra("reporter_regno", item.postedBy.regNo ?: "No Reg.No")
         }
         context.startActivity(intent)
     }
 
-    override fun getItemCount(): Int = claimedItems.size
+    // Use the single 'items' list size
+    override fun getItemCount(): Int = items.size
 
-    // Method to update the claimed items list
-    fun updateItems(newItems: List<ItemPost>) {
-        claimedItems = newItems
-        notifyDataSetChanged()
+    fun updateItems(newItems: List<Item>) {
+        items.clear()
+        items.addAll(newItems)
+        notifyDataSetChanged() // Full refresh
+    }
+
+    fun addItems(newItems: List<Item>) {
+        val startPosition = items.size
+        items.addAll(newItems)
+        notifyItemRangeInserted(startPosition, newItems.size) // More efficient
     }
 
     fun formatDateTime(dateFound: String): Pair<String, String> {
