@@ -1,4 +1,4 @@
-package com.example.findit
+package com.example.findit.Adapter
 
 import android.content.Context
 import android.content.Intent
@@ -7,20 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.findit.data.Item
+import com.example.findit.ClaimedItemDetails
+import com.example.findit.R
+import com.example.findit.data.ItemPost
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
-class LostFoundAdapter(private var allItems: List<Item>) :
-    RecyclerView.Adapter<LostFoundAdapter.ViewHolder>() {
-
-    // Current filtered list of items
-    private var filteredItems: List<Item> = allItems
+class ClaimedItemsAdapter(private var claimedItems: List<ItemPost>) :
+    RecyclerView.Adapter<ClaimedItemsAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val itemImage: ImageView = itemView.findViewById(R.id.item_image)
@@ -32,12 +29,13 @@ class LostFoundAdapter(private var allItems: List<Item>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_lost_found, parent, false)
+            .inflate(R.layout.item_claimed_history, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = filteredItems[position]
+        val item = claimedItems[position]
+
         holder.itemNameValue.text = item.title
         val (date, time) = formatDateTime(item.dateFound)
         holder.dateValue.text = date
@@ -51,54 +49,37 @@ class LostFoundAdapter(private var allItems: List<Item>) :
                 .into(holder.itemImage)
         }
 
-        // Set click listener on the entire item view
+        // Set click listener to navigate to details
         holder.itemView.setOnClickListener {
             val context = holder.itemView.context
-            navigateToItemDetails(context, item)
+            navigateToClaimedItemDetails(context, item)
         }
     }
 
-    private fun navigateToItemDetails(context: Context, item: Item) {
-        val intent = Intent(context, ItemDetails::class.java).apply {
+    private fun navigateToClaimedItemDetails(context: Context, item: ItemPost) {
+        val intent = Intent(context, ClaimedItemDetails::class.java).apply {
             putExtra("item_name", item.title)
             val (date, time) = formatDateTime(item.dateFound)
             putExtra("date", date)
             putExtra("time", time)
             putExtra("place", item.location)
             putExtra("image_resource", item.imageUrl)
+            putExtra("reportedBy",item.postedBy.name + " " + item.postedBy.regNo)
+            putExtra("claimedBy",item.claimedBy.name + " " + item.claimedBy.regNo)
 
             // You can add more data here if needed
             putExtra("contact", item.contact)
-            putExtra("itemId",item._id);
             putExtra("description", item.description)
-            putExtra("reported_by", item.postedBy.name ?: "Unknown User")
-            putExtra("reporter_regno", item.postedBy.regNo ?: "No Reg.No")
+            putExtra("image_resource",item.imageUrl)
         }
         context.startActivity(intent)
     }
 
-    override fun getItemCount(): Int = filteredItems.size
+    override fun getItemCount(): Int = claimedItems.size
 
-    // Method to filter items based on search query
-    fun filter(query: String) {
-        val lowercaseQuery = query.lowercase(Locale.getDefault())
-
-        filteredItems = if (query.isEmpty()) {
-            allItems
-        } else {
-            allItems.filter { item ->
-                item.title.lowercase(Locale.getDefault()).contains(lowercaseQuery) ||
-                        item.location.lowercase(Locale.getDefault()).contains(lowercaseQuery)
-            }
-        }
-
-        notifyDataSetChanged()
-    }
-
-    // Method to update all items
-    fun updateItems(newItems: List<Item>) {
-        allItems = newItems
-        filteredItems = newItems
+    // Method to update the claimed items list
+    fun updateItems(newItems: List<ItemPost>) {
+        claimedItems = newItems
         notifyDataSetChanged()
     }
 

@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.findit.Adapter.ClaimedItemsAdapter
 import com.example.findit.ItemReportHistory
 import com.example.findit.objects.RetrofitInstance
 import kotlinx.coroutines.launch
