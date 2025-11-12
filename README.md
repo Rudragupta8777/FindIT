@@ -207,12 +207,6 @@ Or, download the APK from our [**Initial Release**](https://github.com/Rudragupt
     </tr>
   </table>
 </div>
-
-
-<div align="center">
-  <h3>
-    <i>Lost & Found App</i> | Made with ❤️ by college students, for college students.</a>
-  </h3>
    
   ---
 </div>
