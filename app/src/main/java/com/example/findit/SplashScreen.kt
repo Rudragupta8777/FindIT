@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
@@ -20,7 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.findit.data.VersionHistory
 import com.example.findit.objects.AppConfig
 import com.example.findit.objects.RetrofitInstance
-import com.google.android.datatransport.BuildConfig
+import com.example.findit.BuildConfig
 import kotlinx.coroutines.launch
 
 class SplashScreen : AppCompatActivity() {
@@ -80,8 +79,8 @@ class SplashScreen : AppCompatActivity() {
 
     private fun handleVersionCheck(versionHistory: VersionHistory) {
         Log.d(TAG, "Server version: ${versionHistory.versionCode}, App version: ${BuildConfig.VERSION_CODE}")
-
         when {
+
             versionHistory.versionCode > BuildConfig.VERSION_CODE && versionHistory.forceUpdate -> {
                 // Force update required
                 runOnUiThread {
