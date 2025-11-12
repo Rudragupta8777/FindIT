@@ -166,7 +166,7 @@ FindIT/
 | QR Claim Flow            | ✅ Complete    | JWT-secured, time-limited QR claims                   |
 | My Items & Claims Page   | ✅ Complete    | Users can manage their history                        |
 | Admin Tools              | ✅ Complete    | Moderation & delete functionality                     |
-| App Core Features        | ⏳ In Progress | Working version deployed, UI refinements ongoing      |
+| App Core Features        | ✅ Complete    | Working version deployed, UI refinements ongoing      |
 
 ---
 
