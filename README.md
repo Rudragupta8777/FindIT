@@ -175,7 +175,7 @@ FindIT/
 ### 📲 Download the App
 
 You can **download the FindIT app** directly from our official website:  
-🌐 [www.finditapp.me](https://www.finditapp.me)
+🌐 [www.finditapp.me](https://findit-app-new.vercel.app)
 
 Or, download the APK from our [**Initial Release**](https://github.com/Rudragupta8777/FindIT/releases/tag/v1.0.0) GitHub release.
 
